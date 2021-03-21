@@ -2,7 +2,7 @@
 name: Feature request
 about: Stuff the module currently doesn't support but you think it should
 title: "[ENH]"
-labels: awaiting prioritisation, enhancement
+labels: enhancement
 assignees: ''
 
 ---

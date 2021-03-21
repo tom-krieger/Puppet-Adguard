@@ -2,7 +2,7 @@
 name: Bug report
 about: Something isn't working as intended
 title: "[BUG]"
-labels: awaiting prioritisation, bug
+labels: bug, requires prioritisation
 assignees: ''
 
 ---
