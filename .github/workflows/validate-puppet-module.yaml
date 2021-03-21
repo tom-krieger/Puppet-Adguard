@@ -1,0 +1,31 @@
+---
+name: validate-puppet-module
+on: push
+
+jobs:
+  validate-module:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout-module
+        uses: actions/checkout@v2
+        with: 
+          path: puppet_adguard
+      - name: checkout-puppet-build-tools
+        uses: actions/checkout@v2
+        with:
+          repository: shoddyguard/puppet_module_build_tools
+          path: puppet_build_tools
+      - name: install-tools
+        run: |
+          wget https://apt.puppet.com/puppet6-release-focal.deb
+          wget https://apt.puppet.com/puppet-tools-release-focal.deb
+          wget https://apt.puppet.com/puppet-tools-release-focal.deb
+          sudo dpkg -i puppet6-release-focal.deb
+          sudo dpkg -i puppet-tools-release-focal.deb
+          sudo dpkg -i puppet-tools-release-focal.deb
+          sudo apt update
+          sudo apt install pdk puppet-agent puppet-bolt ruby
+      - name: test-module-basic
+        shell: pwsh
+        run: |
+            ./puppet_build_tools/.build/GitHub.ps1 -ModulePath ./puppet_adguard
