@@ -1,6 +1,6 @@
 {
   "name": "shoddyguard-adguard",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "Steve Brown",
   "summary": "Manages AdGuard Home",
   "license": "Apache-2.0",
