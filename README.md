@@ -1,4 +1,4 @@
-[![validate-puppet-module Actions Status](https://github.com/shoddyguard/puppet_adguard/workflows/validate-puppet-module/badge.svg)](https://github.com/shoddyguard/Puppet-Adguard/actions)
+[![validate-puppet-module Actions Status](https://github.com/shoddyguard/puppet_adguard/workflows/validate-puppet-module/badge.svg?branch=main)](https://github.com/shoddyguard/Puppet-Adguard/actions)
 # Puppet-Adguard
 Puppet module for installing and managing AdGuard Home
 
