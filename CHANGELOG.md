@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Release 
 
-### 0.1.0
+### [v0.1.0](https://github.com/shoddyguard/Puppet-Adguard/tree/v0.1.0) (2020-03-21)
 
 **Features**
-Initial release, all current features documented in the README
+Initial release
 
 **Bugfixes**
 

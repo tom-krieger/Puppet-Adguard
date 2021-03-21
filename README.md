@@ -1,14 +1,16 @@
 [![validate-puppet-module Actions Status](https://github.com/shoddyguard/Puppet-Adguard/workflows/validate-puppet-module/badge.svg?branch=main)](https://github.com/shoddyguard/Puppet-Adguard/actions)[![publish-puppet-module Actions Status](https://github.com/shoddyguard/Puppet-Adguard/workflows/publish-puppet-module/badge.svg)](https://github.com/shoddyguard/Puppet-Adguard/actions)
 # Puppet-Adguard
-Puppet module for installing and managing AdGuard Home
+A Puppet module for installing and managing AdGuard Home
 
 # Module description
 This module will install and configure AdGuard Home on a node, it largely uses the defaults provided by AdGuard Home in a typical installation.  
-Management is largely performed by manipulating the `AdGuardHome.yaml` file.  
+This module manages AdGuard by manipulating the `AdGuardHome.yaml` file.  
 There are some features that are not yet working in this module, see the [Known Limitations](#know-limitations) sections for more information. 
 
 This module has been tested on the following platforms:
 - Ubuntu 20.04
+- Ubuntu 18.04
+- Debian 9
 
 # Setup
 The below demonstrates a minimum configuration:  
@@ -107,6 +109,7 @@ By default the following bootstrap servers are configured:
 - '149.112.112.10'
 - '2620:fe::10'
 - '2620:fe::fe:10'
+- 
 These can be changed by changing the `bootstrap_dns` parameter.
 
 ## Disabling configuration file management
