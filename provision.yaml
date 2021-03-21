@@ -1,0 +1,27 @@
+---
+default: 
+  provisioner: docker
+  images: 
+    - litmusimage/ubuntu:20.04
+  params:
+      vagrant_provider: virtualbox
+vagrant:
+  provisioner: vagrant
+  images: 
+    - generic/ubuntu2004
+    - generic/ubuntu1804
+    - generic/debian9
+  params:
+      vagrant_provider: virtualbox
+docker:
+  provisioner: docker
+  images: 
+    - 'litmusimage/ubuntu:18.04'
+    - 'litmusimage/ubuntu:20.04'
+    - 'litmusimage/debian:9'
+github:
+  provisioner: docker
+  images:
+    - 'litmusimage/ubuntu:18.04'
+    - 'litmusimage/ubuntu:20.04'
+    - 'litmusimage/debian:9'

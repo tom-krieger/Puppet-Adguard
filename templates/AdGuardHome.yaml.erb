@@ -1,0 +1,236 @@
+bind_host: <%= @webui_interface %>
+bind_port: <%= @webui_port %>
+beta_bind_port: 0
+users:
+<% @users.each do |u| -%>
+- name: <%= u['username'] %>
+  password: <%= u['password'] %>
+<% end -%>
+http_proxy: "<%= @http_proxy %>"
+language: ""
+rlimit_nofile: <%= @rlimit_nofile %>
+debug_pprof: <%= @debug_pprof %>
+web_session_ttl: <%= @web_session_ttl %>
+dns:
+  bind_host: <%= @dns_interface %>
+  port: <%= @dns_port %>
+  statistics_interval: <%= @statistics_interval %>
+  querylog_enabled: <%= @querylog_enabled %>
+  querylog_file_enabled: <%= @querylog_file_enabled %>
+  querylog_interval: <%= @querylog_interval %>
+  querylog_size_memory: <%= @querylog_size_memory %>
+  anonymize_client_ip: <%= @anonymize_client_ip %>
+  protection_enabled: <%= @protection_enabled %>
+  blocking_mode: <%= @blocking_mode %>
+  blocking_ipv4: "<%= @blocking_ipv4 %>"
+  blocking_ipv6: "<%= @blocking_ipv6 %>"
+  blocked_response_ttl: <%= @blocked_response_ttl %>
+  parental_block_host: <%= @parental_block_host %>
+  safebrowsing_block_host: <%= @safebrowsing_block_host %>
+  ratelimit: <%= @ratelimit %>
+<% if @ratelimit_whitelist -%>
+  ratelimit_whitelist:
+<% @ratelimit_whitelist.each do |rw| -%>
+    - <%= rw %>
+<% end -%>
+<% else -%>
+  ratelimit_whitelist: []
+<% end -%>
+  refuse_any: <%= @refuse_any %>
+  upstream_dns:
+<% @upstream_dns.each do |ud| -%>
+  - <%= ud %>
+<% end -%>
+  upstream_dns_file: "<%= @upstream_dns_file %>"
+  bootstrap_dns:
+<% @bootstrap_dns.each do |bd| -%>
+  - <%= bd %>
+<% end -%>
+  all_servers: <%= @all_servers %>
+  fastest_addr: <%= @fastest_addr %>
+<% if @allowed_clients -%>
+  allowed_clients:
+<% @allowed_clients.each do |ac| -%>
+  - <%= ac %>
+<% end -%>
+<% else -%>
+  allowed_clients: []
+<% end -%>
+<% if @disallowed_clients -%>
+  disallowed_clients:
+<% @disallowed_clients.each do |dc| -%>
+  - <%= dc %>
+<% end -%>
+<% else -%>
+  disallowed_clients: []
+<% end -%>
+  blocked_hosts:
+<% @blocked_hosts.each do |bh| -%>
+  - <%= bh %>
+<% end -%>
+  cache_size: <%= @dns_cache_size %>
+  cache_ttl_min: <%= @dns_cache_ttl_min %>
+  cache_ttl_max: <%= @dns_cache_ttl_max %>
+<% if @bogus_nxdomain -%>
+  bogus_nxdomain:
+<% @bogus_nxdomain.each do |dn| -%>
+  - <%= dn %>
+<% end -%>
+<% else -%>
+  bogus_nxdomain: []
+<% end -%>
+  aaaa_disabled: <%= @aaaa_disabled %>
+  enable_dnssec: <%= @enable_dnssec %>
+  edns_client_subnet: <%= @edns_client_subnet %>
+  max_goroutines: <%= @max_goroutines %>
+  ipset: []
+  filtering_enabled: <%= @filtering_enabled %>
+  filters_update_interval: <%= @filters_update_interval %>
+  parental_enabled: <%= @parental_enabled %>
+  safesearch_enabled: <%= @safesearch_enabled %>
+  safebrowsing_enabled: <%= @safebrowsing_enabled %>
+  safebrowsing_cache_size: <%= @safebrowsing_cache_size %>
+  safesearch_cache_size: <%= @safesearch_cache_size %>
+  parental_cache_size: <%= @parental_cache_size %>
+  cache_time: <%= @cache_time %>
+<% if @rewrites -%>
+  rewrites:
+<% @rewrites.each do |rw| -%>
+  - domain: <%= rw['domain'] %>
+    answer: <%= rw['answer'] %>
+<% end -%>
+<% else -%>
+  rewrites: []
+<% end -%>
+<% if @blocked_services -%>
+  blocked_services:
+<% @blocked_services.each do |bs| -%>
+  - <%= bs %>
+<% end -%>
+<% else -%>
+  blocked_services: []
+<% end -%>
+  customresolver: null
+tls:
+  enabled: false
+  server_name: ""
+  force_https: false
+  port_https: 443
+  port_dns_over_tls: 853
+  port_dns_over_quic: 784
+  port_dnscrypt: 0
+  dnscrypt_config_file: ""
+  allow_unencrypted_doh: false
+  strict_sni_check: false
+  certificate_chain: ""
+  private_key: ""
+  certificate_path: ""
+  private_key_path: ""
+filters:
+<% @filters.to_enum.with_index(1).each do |fl, idx| -%>
+- enabled: <%= fl['enabled'] %>
+  url: <%= fl['url'] %>
+  name: <%= fl['name'] %>
+  id: <%= "#{idx}" %>
+<% end -%>
+<% if @whitelist_filters -%>
+whitelist_filters:
+<% @whitelist_filters.to_enum.with_index(1).each do |wf, idx| -%>
+- enabled: <%= wf['enabled'] %>
+  url: <%= wf['url'] %>
+  name: <%= wf['name'] %>
+  id: <%= "#{idx}" %>
+<% end -%>
+<% else -%>
+whitelist_filters: []
+<% end -%>
+<% if @user_rules -%>
+user_rules:
+<% @user_rules.each do |ur| -%>
+- '<%= ur %>'
+<% end -%>
+<% else -%>
+user_rules: []
+<% end -%>
+dhcp:
+  enabled: false
+  interface_name: ""
+  dhcpv4:
+    gateway_ip: ""
+    subnet_mask: ""
+    range_start: ""
+    range_end: ""
+    lease_duration: 86400
+    icmp_timeout_msec: 1000
+    options: []
+  dhcpv6:
+    range_start: ""
+    lease_duration: 86400
+    ra_slaac_only: false
+    ra_allow_slaac: false
+<% if @clients -%>
+clients:
+<% @clients.each do |cl| -%>
+- name: <%= cl['name'] %>
+<% if cl['tags'] -%>
+  tags:
+<% cl['tags'].each do |tag| -%>
+  - <%= tag %>
+<% end -%>
+<% else -%>
+  tags: []
+<% end -%>
+  ids:
+<% cl['ids'].each do |id| -%>
+  - <%= id %>
+<% end -%>
+  use_global_settings: <%= cl['use_global_settings'] %>
+<% if cl['filtering_enabled'] -%>
+  filtering_enabled: <%= cl['filtering_enabled'] %>
+<% else -%>
+  filtering_enabled: <%= @filtering_enabled %>
+<% end -%>
+<% if cl['parental_enabled'] -%>
+  parental_enabled: <%= cl['parental_enabled'] %>
+<% else -%>
+  parental_enabled: <%= @parental_enabled %>
+<% end -%>
+<% if cl['safesearch_enabled'] -%>
+  safesearch_enabled: <%= cl['safesearch_enabled'] %>
+<% else -%>
+  safesearch_enabled: <%= @safesearch_enabled %>
+<% end -%>
+<% if cl['safebrowsing_enabled'] -%>
+  safebrowsing_enabled: <%= cl['safebrowsing_enabled'] %>
+<% else -%>
+  safebrowsing_enabled: <%= @safebrowsing_enabled %>
+<% end -%>
+  use_global_blocked_services: <%= cl['use_global_blocked_services'] %>
+<% if cl['blocked_services'] -%>
+  blocked_services:
+<% cl['blocked_services'].each do |bs| -%>
+  - <%= bs %>
+<% end -%>
+<% else -%>
+  blocked_services: []
+<% end -%>
+<% if cl['upstreams'] -%>
+  upstreams:
+<% cl['upstreams'].each do |us| -%>
+  - <%= us %>
+<% end -%>
+<% else -%>
+  upstreams: []
+<% end -%>
+<% end -%>
+<% else -%>
+clients: []
+<% end -%>
+log_compress: <%= @log_compress %>
+log_localtime: <%= @log_localtime %>
+log_max_backups: <%= @log_max_backups %>
+log_max_size: <%= @log_max_size %>
+log_max_age: <%= @log_max_age %>
+log_file: "<%= @log_file %>"
+verbose: <%= @verbose_logging %>
+schema_version: 7

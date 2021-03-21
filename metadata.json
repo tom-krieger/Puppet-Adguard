@@ -1,0 +1,51 @@
+{
+  "name": "shoddyguard-adguard",
+  "version": "1.0.0",
+  "author": "Steve Brown",
+  "summary": "Manages AdGuard Home",
+  "license": "Apache-2.0",
+  "source": "https://github.com/shoddyguard/Puppet-Adguard",
+  "project_page": "https://github.com/shoddyguard/Puppet-Adguard/projects",
+  "issues_url": "https://github.com/shoddyguard/Puppet-Adguard/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 6.1.0 < 7.0.0"
+    },
+    {
+      "name": "dodevops/githubreleases",
+      "version_requirement": ">= 4.0.0 < 5.0.0"
+    },
+    {
+      "name": "puppet/archive",
+      "version_requirement": ">= 4.5.0 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">= 4.1.0 < 5.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "20.04"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.0 < 7.0.0"
+    }
+  ],
+  "tags": [
+    "adguard",
+    "adguardhome",
+    "pihole",
+    "adblock"
+  ],
+  "pdk-version": "2.0.0",
+  "template-url": "pdk-default#2.0.0",
+  "template-ref": "tags/2.0.0-0-ge838f1d"
+}
