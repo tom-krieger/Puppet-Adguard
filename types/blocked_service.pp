@@ -1,4 +1,5 @@
-# A list of services that AdGuard Home is able to block out of the box.
+# @summary 
+#   A list of services that AdGuard Home is able to block out of the box.
 type Adguard::Blocked_service = Enum[
   '9gag',
   'amazon',
