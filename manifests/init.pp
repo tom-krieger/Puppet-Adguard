@@ -237,10 +237,7 @@ class adguard
 (
   Stdlib::IP::Address::V4::Nosubnet $webui_interface,
   Stdlib::Port $webui_port,
-  Tuple[Struct[
-    username => String,
-    password => String
-  ],1,default] $users,
+  Adguard::Users $users,
   Optional[Stdlib::HTTPUrl] $http_proxy,
   Integer $rlimit_nofile,
   Boolean $debug_pprof,
@@ -263,7 +260,7 @@ class adguard
   Integer $ratelimit,
   Optional[Tuple[Stdlib::IP::Address,1,default]] $ratelimit_whitelist,
   Boolean $refuse_any,
-  Tuple[Variant[Stdlib::IP::Address,Stdlib::HTTPUrl],1,4] $upstream_dns,
+  Tuple[Variant[Stdlib::IP::Address,Stdlib::HTTPUrl,Adguard::Ipv4_port],1,4] $upstream_dns,
   Optional[Stdlib::Unixpath] $upstream_dns_file,
   Tuple[Stdlib::IP::Address,1,default] $bootstrap_dns,
   Boolean $all_servers,
