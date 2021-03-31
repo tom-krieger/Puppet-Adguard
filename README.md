@@ -109,7 +109,7 @@ By default the following bootstrap servers are configured:
 - '149.112.112.10'
 - '2620:fe::10'
 - '2620:fe::fe:10'
-- 
+
 These can be changed by changing the `bootstrap_dns` parameter.
 
 ## Disabling configuration file management
