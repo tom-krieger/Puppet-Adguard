@@ -12,7 +12,6 @@
 #   The interface to bind the WebUI to.
 # @param webui_port
 #   The port to bind the WebUI to.
-#   Default: 80
 # @param users
 #   The users to add to allow access to the WebUI.
 #   Note: the password needs to be in BCrypt-encrypted format, to get a password you can run the following on most *nix systems: 
@@ -20,222 +19,156 @@
 # @param http_proxy
 #   Define an optional http_proxy.
 #   While adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
-#   Default: undef
 # @param rlimit_nofile
 #   Limit on the maximum number of open files for server process (Linux).
-#   Default: 0 (use system default)
 # @param debug_pprof
 #   Enable pprof HTTP server listening on port 6060 for debugging. 
-#   Default: false
 # @param web_session_ttl
 #   Web session TTL (in hours) a web user will stay signed in for this amount of time.
-#   Default: 8
 # @param dns_interface
 #   The interface to bind to for DNS.
-#   Default: 0.0.0.0 (all interfaces)
 # @param dns_port
 #   The port to bind dns to, defaults to 53.
-#   Note: if you're on a systemd OS and you're binding to port 53 AdGuard won't be able to start due to resolved's DNSStubListener
-#   as such DNSStubListener will be disabled in /etc/systemd/resolved.conf, 
-#   this WILL break name resolution when there's no DNS server running locally.
 # @param statistics_interval
 #   Time interval for statistics (in days).
-#   Default: 1
 # @param querylog_enabled
 #   Query logging (also used to calculate top 50 clients, blocked domains and requested domains for statistical purposes).
-#   Default: true
 # @param querylog_file_enabled
 #   Write query logs to a file. 
-#   Default: true
 # @param querylog_interval
 #   Time interval for query log (in days).
-#   Default: 90
 # @param querylog_size_memory
 #   Number of entries kept in memory before they are flushed to disk. 
-#   Default: 1000
 # @param anonymize_client_ip
 #   If true, anonymize clients' IP addresses in logs and stats.
-#   Default: false
 # @param protection_enabled
 #   Whether any kind of filtering and protection should be done, when off it works as a plain dns forwarder. 
-#   Default: to true
 # @param blocking_mode
 #   Specifies how to block DNS requests. 
 #   Valid options:
 #     - default (respond with NXDOMAIN status) 
 #     - null_ip (respond with the unspecified IP address (0.0.0.0))
 #     - custom_ip (respond with blocking_ipv4 or blocking_ipv6 address)
-#   Default: default
 # @param blocking_ipv4
 #   IP address to be returned for a blocked A request if blocking_mode is set to custom_ip. 
-#   Default: undef
 # @param blocking_ipv6
 #   IP address to be returned for a blocked AAAA request if blocking_mode is set to custom_ip. 
-#   Default: undef
 # @param blocked_response_ttl
 #   For how many seconds the clients should cache a filtered response. Low values are useful on LAN if you change filters very often,
 #   high values are useful to increase performance and save traffic. 
-#   Default: 10
 # @param parental_block_host
 #   IP (or domain name) which is used to respond to DNS requests blocked by parental control. 
-#   Default: family-block.dns.adguard.com
 # @param safebrowsing_block_host
 #   IP (or domain name) which is used to respond to DNS requests blocked by safe-browsing. 
-#   Default: standard-block.dns.adguard.com
 # @param ratelimit
 #   DDoS protection, specifies in how many packets per second a client should receive. 
 #   Anything above that is silently dropped. 
 #   To disable set 0, default is 20. Safe to disable if DNS server is not available from internet.
-#   Default: 20
 # @param ratelimit_whitelist
 #   An array of ip addresses to whitelist from ratelimiting.
-#   Default: undef
 # @param refuse_any
 #   Another DDoS protection mechanism. 
 #   Requests of type ANY are rarely needed, so refusing to serve them mitigates against attackers trying to use your DNS as a reflection. 
 #   Safe to disable if DNS server is not available from internet. 
-#   Default: true
 # @param upstream_dns
 #   An array of upstream DNS servers. Can be a URL or IP.
 # @param upstream_dns_file
 #   Path to a file with the list of upstream DNS servers. If it is configured, the value of upstream_dns is ignored. Defaults to undef
 # @param bootstrap_dns
 #   List of DNS servers used for initial hostname resolution in case an upstream server name is a hostname.
-#   Default:
-#     - 9.9.9.9
-#     - 8.8.8.8
-#     - 2620:fe::fe
-#     - 2620:fe::9
 # @param all_servers
 #   Enables parallel queries to all configured upstream servers to speed up resolving. 
 #   If disabled, the queries are sent to each upstream server one-by-one and then sorted by RTT. 
-#   Default: false
 # @param fastest_addr
 #   Use Fastest Address algorithm. It finds an IP address with the lowest latency and returns this IP address in DNS response. 
-#   Default: false
 # @param allowed_clients
 #   IP addresses of allowed clients.
-#   Default: undef
 # @param disallowed_clients
 #   IP addresses of disallowed clients.
-#   Default: undef
 # @param blocked_hosts
 #   An array of hosts to block.
-#   Default: undef
 # @param dns_cache_size
 #   DNS cache size (in bytes). 
-#   Default: 4194304
 # @param dns_cache_ttl_min
 #   Override TTL value (minimum) received from upstream server. This value can't larger than 3600 (1 hour).
-#   Default: 0 (do not override)
 # @param dns_cache_ttl_max
 #   Override TTL value (maximum) received from upstream server. 
-#   Default: 0 (do not override)
 # @param bogus_nxdomain
-#    Optional - Transform responses with these IP addresses to NXDOMAIN
+#    Transform responses with these IP addresses to NXDOMAIN
 # @param aaaa_disabled
 #   Respond with an empty answer to all AAAA requests
-#   Default: false
 # @param enable_dnssec
 #   Set DNSSEC flag in the outgoing DNS requests and check the result.
 #   Note if running an additional DNS server (such as Unbound or BIND) that uses DNSSEC you do not want DNSSEC on both
 #   as you will get erroes with legitimate DNS requests.
-#   Default: false
 # @param edns_client_subnet
 #   Enable EDNS Client Subnet option. If enabled, AdGuard Home will be sending ECS extension to the upstream DNS servers. 
 #   Please note, that this will be done for clients with public IP addresses only.
-#   Default: false
 # @param max_goroutines
 #   Max. number of parallel goroutines for processing incoming requests
-#   Default: 300
 # @param filtering_enabled
 #   Filtering of DNS requests based on filter lists. 
-#   Default: true
 # @param filters_update_interval
 #   How often the filters update (in hours). 
-#   Default: 24.
 # @param parental_enabled
 #   Parental control-based DNS requests filtering
-#   Default: false
 # @param safesearch_enabled
 #   Enforcing "Safe search" option for search engines, when possible.
-#   Default: false
 # @param safebrowsing_enabled
 #   Filtering of DNS requests based on safebrowsing
-#   Default: false
 # @param safebrowsing_cache_size
 #   Safe Browsing cache size (in bytes).
-#   Default: 1048576
 # @param safesearch_cache_size
 #   Safe Search cache size (in bytes).
-#   Default: 1048576
 # @param parental_cache_size
 #   Parental Control cache size (in bytes). 
-#   Default: 1048576
 # @param cache_time
 #   Safe Browsing, Safe Search, Parental Control cache TTL. 
-#   Default: 30
 # @param rewrites
 #   An array of custom rewrite rules
 #   Format:
-#     domain: the domain to perform the rewrite on
-#     answer: the ip address to point to
-#   Default: undef
+#      - domain: the domain to perform the rewrite on
+#      - answer: the ip address to point to
 # @param blocked_services
 #   An array of any services you wish to block.
-#   Default: undef
 # @param filters
-#   An array of block filters to add.
-#   Format
-#     name: the name for the filter (eg AdGuard Default)
-#     enabled: true/false
-#     url: the URL to point to
-#   Default: the default list provided by AdGuard
+#   An array of block filters to add. Will default to the standard list provided by AdGuard
+#   Format:
+#     - name: the name for the filter (eg AdGuard Default)
+#     - enabled: true/false
+#     - url: the URL to point to
 # @param whitelist_filters
 #   An array of whitelist filters to add.
-#     name: the name for the filter (eg AdGuard Default)
-#     enabled: true/false
-#     url: the URL to point to
-#   Default: undef
+#   Format:
+#     - name: the name for the filter (eg AdGuard Default)
+#     - enabled: true/false
+#     - url: the URL to point to
 # @param user_rules
 #   Any custom rules you'd like to define, optional.
-#   Default: undef
 # @param clients
 #   EXPERIMENTAL: Individual client settings
 #   Not extensively tested, please report any issues on the project repo.
-#   Default: undef
 # @param log_compress
 #   Whether or not to compress the logs. 
-#   Default: false
 # @param log_localtime
 #   Whether to format timestamps using computer's local time.
-#   Default: false
 # @param log_max_backups
 #   Maximum number of old log files to retain (MaxAge may still cause them to get deleted) (default: 0, which retains all old log files)
-#   Defaults to 0.
 # @param log_max_size
 #   Maximum size in megabytes of the log file before it gets rotated. 
-#   Defaults: 100
 # @param log_max_age
 #   MaxAge is the maximum number of days to retain old log files. 
-#   Default: 3
 # @param log_file
 #   Path to the log file. If empty, writes to stdout, if syslog -- system log (or eventlog on Windows).
 #   Valid options are: unixpath, undef or 'syslog'.
-#   Default: undef
 # @param verbose_logging
 #   Enable or disable verbose logging. Defaults to false
 # @param adguard_path
 #   The path to where you'd like AdGuard installed, defaults to /opt/AdGuardHome
 # @param manage_config
 #   Whether or not to manage the AdGuardHome.yaml file
-#   This is designed as a failsafe option (see Disabling configuration file management in the README)
-#   If the the file format changes drastically in the future you can set this to false to stop Puppet fighting with AdGuardHome.
-#   The initial configuration file will always be created by Puppet.
-#   Default: true
 # @param configuration_file
 #   The path to where you want to store the configuration file, must be a full path to AdGuardHome.yaml. 
-#   Default: a child of adguard::adguard_path
 # @param service_name
 #   The name of the service to manage, defaults to AdGuardHome
 # @param version
