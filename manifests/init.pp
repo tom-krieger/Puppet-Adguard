@@ -14,8 +14,7 @@
 #   The port to bind the WebUI to.
 # @param users
 #   The users to add to allow access to the WebUI.
-#   Note: the password needs to be in BCrypt-encrypted format, to get a password you can run the following on most *nix systems: 
-#   `htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
+#   Note: the password needs to be in BCrypt-encrypted format.
 # @param http_proxy
 #   Define an optional http_proxy.
 #   While adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
@@ -28,7 +27,7 @@
 # @param dns_interface
 #   The interface to bind to for DNS.
 # @param dns_port
-#   The port to bind dns to, defaults to 53.
+#   The port to bind dns to
 # @param statistics_interval
 #   Time interval for statistics (in days).
 # @param querylog_enabled
