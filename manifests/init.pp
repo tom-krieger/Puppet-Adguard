@@ -237,7 +237,7 @@ class adguard
 (
   Stdlib::IP::Address::V4::Nosubnet $webui_interface,
   Stdlib::Port $webui_port,
-  Adguard::Users $users,
+  Array[Adguard::User] $users,
   Optional[Stdlib::HTTPUrl] $http_proxy,
   Integer $rlimit_nofile,
   Boolean $debug_pprof,
@@ -285,10 +285,7 @@ class adguard
   Integer $safesearch_cache_size,
   Integer $parental_cache_size,
   Integer $cache_time,
-  Optional[Struct[
-    domain => String,
-    answer => String,
-  ]] $rewrites,
+  Optional[Adguard::Rewrites] $rewrites,
   Optional[Tuple[Adguard::Blocked_service,1,default]] $blocked_services,
   Tuple[Struct[
     name => String,
