@@ -33,3 +33,11 @@ jobs:
         shell: pwsh
         run: |
             ./puppet_build_tools/.build/GitHub.ps1 -ModulePath ./puppet_adguard
+      - name: notify-slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ always() }} # Testing
