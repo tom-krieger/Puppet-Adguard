@@ -222,7 +222,7 @@ class adguard
   Integer $dns_cache_size = 4194304,
   Integer[default,3600] $dns_cache_ttl_min = 0,
   Integer[default,3600] $dns_cache_ttl_max = 0,
-  Optional[Array[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet]] $bogus_nxdomain = undef,
+  Optional[Array[Adguard::Dns_server]] $bogus_nxdomain = undef,
   Boolean $aaaa_disabled = false,
   Boolean $enable_dnssec = false,
   Boolean $edns_client_subnet = false,
