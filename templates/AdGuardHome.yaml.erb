@@ -170,6 +170,7 @@ dhcp:
     range_end: ""
     lease_duration: 86400
     icmp_timeout_msec: 1000
+<% end -%>
 <% if @dhcp_v4_options['options'] -%>
     options:
 <% @dhcp_v4_options['options'].each do |opt| -%>
