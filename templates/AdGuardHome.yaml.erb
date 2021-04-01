@@ -163,6 +163,14 @@ dhcp:
     range_end: "<%= @dhcp_v4_options['range_end'] %>"
     lease_duration: <%= @dhcp_v4_options['lease_duration'] %>
     icmp_timeout_msec: 1000
+<% if @dhcp_v4_options['options'] -%>
+    options:
+<% @dhcp_v4_options['options'].each do |opt| -%>
+      - <%= opt %>
+<% end -%>
+<% else -%>
+    options: []
+<% end -%>
 <% else -%>
     gateway_ip: ""
     subnet_mask: ""
@@ -170,14 +178,7 @@ dhcp:
     range_end: ""
     lease_duration: 86400
     icmp_timeout_msec: 1000
-<% if @dhcp_v4_options['options'] -%>
-    options:
-<% @dhcp_v4_options['options'].each do |opt| -%>
-      - <%= opt %>
-<% else -%>
     options: []
-<% end -%>
-<% end -%>
 <% end -%>
   dhcpv6:
     range_start: ""
