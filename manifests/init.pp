@@ -1,15 +1,22 @@
 # @summary Manages an Adguard Home installation
 # 
+# @example Basic usage
+#   class {'adguard':
+#     users => [{
+#       username => 'user',
+#       password => '$2a$10$DBX2KdCRP6JKS8TqvkVWTOjUgUQLtlWGkxkZAuiUZGTURhorjlX6K'
+#     }],
+#   }
+# 
 # @param webui_interface
 #   The interface to bind the WebUI to.
-#   Default: 0.0.0.0 (all interfaces)
 # @param webui_port
 #   The port to bind the WebUI to.
 #   Default: 80
 # @param users
-#   The users to add to the WebUI in an array of hashes.
-#   `[{username => 'user', password => '$2a$10$DBX2KdCRP6JKS8TqvkVWTOjUgUQLtlWGkxkZAuiUZGTURhorjlX6K'}]`
-#   Note: the password needs to be in BCrypt-encrypted format, to get a password: `htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
+#   The users to add to allow access to the WebUI.
+#   Note: the password needs to be in BCrypt-encrypted format, to get a password you can run the following on most *nix systems: 
+#   `htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
 # @param http_proxy
 #   Define an optional http_proxy.
 #   While adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
@@ -235,75 +242,85 @@
 #   The version to install from the GitHub release
 class adguard
 (
-  Stdlib::IP::Address::V4::Nosubnet $webui_interface,
-  Stdlib::Port $webui_port,
   Array[Adguard::User] $users,
-  Optional[Stdlib::HTTPUrl] $http_proxy,
-  Integer $rlimit_nofile,
-  Boolean $debug_pprof,
-  Integer $web_session_ttl,
-  Stdlib::IP::Address::V4::Nosubnet $dns_interface,
-  Stdlib::Port $dns_port,
-  Integer $statistics_interval,
-  Boolean $querylog_enabled,
-  Boolean $querylog_file_enabled,
-  Integer $querylog_interval,
-  Integer $querylog_size_memory,
-  Boolean $anonymize_client_ip,
-  Boolean $protection_enabled,
-  Enum['default','null_ip','custom_ip'] $blocking_mode,
-  Optional[Stdlib::IP::Address::V4::Nosubnet] $blocking_ipv4,
-  Optional[Stdlib::IP::Address::V6] $blocking_ipv6,
-  Integer $blocked_response_ttl,
-  Variant[Stdlib::Fqdn,Stdlib::IP::Address] $parental_block_host,
-  Variant[Stdlib::Fqdn,Stdlib::IP::Address] $safebrowsing_block_host,
-  Integer $ratelimit,
-  Optional[Tuple[Stdlib::IP::Address,1,default]] $ratelimit_whitelist,
-  Boolean $refuse_any,
-  Tuple[Variant[Stdlib::IP::Address,Stdlib::HTTPUrl,Adguard::Ipv4_port],1,4] $upstream_dns,
-  Optional[Stdlib::Unixpath] $upstream_dns_file,
-  Tuple[Stdlib::IP::Address,1,default] $bootstrap_dns,
-  Boolean $all_servers,
-  Boolean $fastest_addr,
-  Optional[Tuple[Stdlib::IP::Address,1,default]] $allowed_clients,
-  Optional[Tuple[Stdlib::IP::Address,1,default]] $disallowed_clients,
-  Array $blocked_hosts,
-  Integer $dns_cache_size,
-  Integer[default,3600] $dns_cache_ttl_min,
-  Integer[default,3600] $dns_cache_ttl_max,
-  Optional[Tuple[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet,1,default]] $bogus_nxdomain,
-  Boolean $aaaa_disabled,
-  Boolean $enable_dnssec,
-  Boolean $edns_client_subnet,
-  Integer $max_goroutines,
-  Boolean $filtering_enabled,
-  Integer $filters_update_interval,
-  Boolean $parental_enabled,
-  Boolean $safesearch_enabled,
-  Boolean $safebrowsing_enabled,
-  Integer $safebrowsing_cache_size,
-  Integer $safesearch_cache_size,
-  Integer $parental_cache_size,
-  Integer $cache_time,
-  Optional[Array[Adguard::Rewrite]] $rewrites,
-  Optional[Array[Adguard::Blocked_service]] $blocked_services,
-  Array[Adguard::Filter] $filters,
-  Optional[Array[Adguard::Filter]] $whitelist_filters,
-  Optional[Array] $user_rules,
-  Optional[Array[Adguard::Client]] $clients,
-  Boolean $log_compress,
-  Boolean $log_localtime,
-  Integer $log_max_backups,
-  Integer $log_max_size,
-  Integer $log_max_age,
-  Boolean $verbose_logging,
-  Variant[Stdlib::Unixpath,Enum['syslog'],Undef] $log_file,
-  Stdlib::Unixpath $adguard_path,
-  Boolean $manage_config,
-  Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/] $configuration_file,
-  String $service_name,
-  String $version,
+  Stdlib::IP::Address::V4::Nosubnet $webui_interface = '0.0.0.0',
+  Stdlib::Port $webui_port = 80,
+  Optional[Stdlib::HTTPUrl] $http_proxy = undef,
+  Integer $rlimit_nofile = undef,
+  Boolean $debug_pprof = false,
+  Integer $web_session_ttl = 8,
+  Stdlib::IP::Address::V4::Nosubnet $dns_interface = '0.0.0.0',
+  Stdlib::Port $dns_port = 53,
+  Integer $statistics_interval = 1,
+  Boolean $querylog_enabled = true,
+  Boolean $querylog_file_enabled = true,
+  Integer $querylog_interval = 90,
+  Integer $querylog_size_memory = 1000,
+  Boolean $anonymize_client_ip = false,
+  Boolean $protection_enabled = true,
+  Enum['default','null_ip','custom_ip'] $blocking_mode = 'default',
+  Optional[Stdlib::IP::Address::V4::Nosubnet] $blocking_ipv4 = undef,
+  Optional[Stdlib::IP::Address::V6] $blocking_ipv6 = undef,
+  Integer $blocked_response_ttl = 10,
+  Variant[Stdlib::Fqdn,Stdlib::IP::Address] $parental_block_host = 'family-block.dns.adguard.com',
+  Variant[Stdlib::Fqdn,Stdlib::IP::Address] $safebrowsing_block_host = 'standard-block.dns.adguard.com',
+  Integer $ratelimit = 20,
+  Optional[Array[Stdlib::IP::Address]] $ratelimit_whitelist = undef,
+  Boolean $refuse_any = true,
+  Array[Adguard::Dns_server] $upstream_dns = ['https://dns10.quad9.net/dns-query'],
+  Optional[Stdlib::Unixpath] $upstream_dns_file = undef,
+  Tuple[Stdlib::IP::Address,1,default] $bootstrap_dns = [
+    '9.9.9.10',
+    '149.112.112.10',
+    '2620:fe::10',
+    '2620:fe::fe:10'
+  ],
+  Boolean $all_servers = false,
+  Boolean $fastest_addr = false,
+  Optional[Tuple[Stdlib::IP::Address,1,default]] $allowed_clients = undef,
+  Optional[Tuple[Stdlib::IP::Address,1,default]] $disallowed_clients = undef,
+  Array $blocked_hosts = [
+    'version.bind',
+    'id.server',
+    'hostname.bind'
+  ],
+  Integer $dns_cache_size = 4194304,
+  Integer[default,3600] $dns_cache_ttl_min = 0,
+  Integer[default,3600] $dns_cache_ttl_max = 0,
+  Optional[Tuple[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet,1,default]] $bogus_nxdomain = undef,
+  Boolean $aaaa_disabled = false,
+  Boolean $enable_dnssec = false,
+  Boolean $edns_client_subnet = false,
+  Integer $max_goroutines = 300,
+  Boolean $filtering_enabled = true,
+  Integer $filters_update_interval = 24,
+  Boolean $parental_enabled = false,
+  Boolean $safesearch_enabled = false,
+  Boolean $safebrowsing_enabled = false,
+  Integer $safebrowsing_cache_size = 1048576,
+  Integer $safesearch_cache_size = 1048576,
+  Integer $parental_cache_size = 1048576,
+  Integer $cache_time = 30,
+  Optional[Array[Adguard::Rewrite]] $rewrites = undef,
+  Optional[Array[Adguard::Blocked_service]] $blocked_services = undef,
+  Array[Adguard::Filter] $filters = $adguard::params::filters,
+  Optional[Array[Adguard::Filter]] $whitelist_filters = undef,
+  Optional[Array] $user_rules = undef,
+  Optional[Array[Adguard::Client]] $clients = undef,
+  Boolean $log_compress = false,
+  Boolean $log_localtime = false,
+  Integer $log_max_backups = 0,
+  Integer $log_max_size = 100,
+  Integer $log_max_age = 3,
+  Boolean $verbose_logging = false,
+  Variant[Stdlib::Unixpath,Enum['syslog'],Undef] $log_file = undef,
+  Stdlib::Unixpath $adguard_path = '/opt/AdGuardHome',
+  Boolean $manage_config = true,
+  Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/] $configuration_file = "${adguard_path}/AdGuardHome.yaml",
+  String $service_name = 'AdGuardHome',
+  String $version = 'latest',
 )
+inherits adguard::params
 {
   if ($blocking_mode == 'custom_ip')
   {
