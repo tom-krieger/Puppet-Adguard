@@ -1,5 +1,7 @@
 # @summary
-#   A hash of client overrides
+#   Provides a structure for defining client overrides.
+#   For more information see the official AdGuard docs: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
+#
 # @example
 #   {
 #      name => 'My Laptop',
@@ -13,6 +15,27 @@
 #      blocked_services => ['Facebook'],
 #      upstreams => ['8.8.8.8']
 #   }
+#
+# @param name
+#   The name of the client.
+# @param tags
+#   Any tags to provide for the client
+# @param ids
+#   An array of ids to use for the client (usually MAC address)
+# @param use_global_settings
+#   Whether or not to use the global settings
+# @param filtering_enabled
+#   Whether to enable or disable filtering for this client
+# @param parental_enabled
+#   Whether to enable or disable parental filtering for this client
+# @param safesearch_enabled
+#   Whether to force safesearches on this client or not
+# @param use_global_blocked_services
+#   Whether to override the global_blocked_services for this client or not
+# @param blocked_services
+#   Which services to block for this client
+# @param upstreams
+#   Override upstream DNS servers for this client
 type Adguard::Client = Struct[
     name => String,
     tags => Optional[Array],
