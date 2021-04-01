@@ -6,17 +6,45 @@
 
 ### Classes
 
+#### Public Classes
+
 * [`adguard`](#adguard): Manages an Adguard Home installation
+
+#### Private Classes
+
+* `adguard::params`: Private class for managing some of the more complex default parameters
 
 ### Data types
 
 * [`Adguard::Blocked_service`](#adguardblocked_service): A list of services that AdGuard Home is able to block out of the box.
+* [`Adguard::Client`](#adguardclient): Provides a structure for defining client overrides.
+For more information see the official AdGuard docs: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
+* [`Adguard::Config_file`](#adguardconfig_file): Simple regex check for the AdGuard config file
+* [`Adguard::Dns_server`](#adguarddns_server): Valid DNS server types
+* [`Adguard::Filter`](#adguardfilter): Used to manage filters in Adguard
+* [`Adguard::Ipv4_port`](#adguardipv4_port): Accepts an IPV4 address with a port (eg 192.168.1.1:8080)
+* [`Adguard::Log_file`](#adguardlog_file): Supported log file types
+* [`Adguard::Rewrite`](#adguardrewrite): Stuctured hash for managing rewrites
+* [`Adguard::User`](#adguarduser): A structed hash for providing users for the adguard web UI.
 
 ## Classes
 
 ### <a name="adguard"></a>`adguard`
 
 Manages an Adguard Home installation
+
+#### Examples
+
+##### Basic usage
+
+```puppet
+class {'adguard':
+  users => [{
+    username => 'user',
+    password => '$2a$10$DBX2KdCRP6JKS8TqvkVWTOjUgUQLtlWGkxkZAuiUZGTURhorjlX6K'
+  }],
+}
+```
 
 #### Parameters
 
@@ -96,117 +124,128 @@ The following parameters are available in the `adguard` class:
 Data type: `Stdlib::IP::Address::V4::Nosubnet`
 
 The interface to bind the WebUI to.
-Default: 0.0.0.0 (all interfaces)
+
+Default value: `'0.0.0.0'`
 
 ##### <a name="webui_port"></a>`webui_port`
 
 Data type: `Stdlib::Port`
 
 The port to bind the WebUI to.
-Default: 80
+
+Default value: `80`
 
 ##### <a name="users"></a>`users`
 
-Data type: `Tuple[Struct[
-    username => String,
-    password => String
-  ],1,default]`
+Data type: `Array[Adguard::User]`
 
-The users to add to the WebUI in an array of hashes.
-`[{username => 'user', password => '$2a$10$DBX2KdCRP6JKS8TqvkVWTOjUgUQLtlWGkxkZAuiUZGTURhorjlX6K'}]`
-Note: the password needs to be in BCrypt-encrypted format, to get a password: `htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
+The users to add to allow access to the WebUI.
+Note: the password needs to be in BCrypt-encrypted format.
 
 ##### <a name="http_proxy"></a>`http_proxy`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
 
-Define an optional http_proxy, while adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
-Default: undef
+Define an optional http_proxy.
+While adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
+
+Default value: ``undef``
 
 ##### <a name="rlimit_nofile"></a>`rlimit_nofile`
 
 Data type: `Integer`
 
 Limit on the maximum number of open files for server process (Linux).
-Default: 0 (use system default)
+
+Default value: `0`
 
 ##### <a name="debug_pprof"></a>`debug_pprof`
 
 Data type: `Boolean`
 
 Enable pprof HTTP server listening on port 6060 for debugging.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="web_session_ttl"></a>`web_session_ttl`
 
 Data type: `Integer`
 
 Web session TTL (in hours) a web user will stay signed in for this amount of time.
-Default: 8
+
+Default value: `8`
 
 ##### <a name="dns_interface"></a>`dns_interface`
 
 Data type: `Stdlib::IP::Address::V4::Nosubnet`
 
 The interface to bind to for DNS.
-Default: 0.0.0.0 (all interfaces)
+
+Default value: `'0.0.0.0'`
 
 ##### <a name="dns_port"></a>`dns_port`
 
 Data type: `Stdlib::Port`
 
-The port to bind dns to, defaults to 53.
-Note: if you're on a systemd OS and you're binding to port 53 AdGuard won't be able to start due to resolved's DNSStubListener
-as such DNSStubListener will be disabled in /etc/systemd/resolved.conf, this WILL break name resolution when there's no DNS server running locally.
+The port to bind dns to
+
+Default value: `53`
 
 ##### <a name="statistics_interval"></a>`statistics_interval`
 
 Data type: `Integer`
 
 Time interval for statistics (in days).
-Default: 1
+
+Default value: `1`
 
 ##### <a name="querylog_enabled"></a>`querylog_enabled`
 
 Data type: `Boolean`
 
 Query logging (also used to calculate top 50 clients, blocked domains and requested domains for statistical purposes).
-Default: true
+
+Default value: ``true``
 
 ##### <a name="querylog_file_enabled"></a>`querylog_file_enabled`
 
 Data type: `Boolean`
 
 Write query logs to a file.
-Default: true
+
+Default value: ``true``
 
 ##### <a name="querylog_interval"></a>`querylog_interval`
 
 Data type: `Integer`
 
 Time interval for query log (in days).
-Default: 90
+
+Default value: `90`
 
 ##### <a name="querylog_size_memory"></a>`querylog_size_memory`
 
 Data type: `Integer`
 
 Number of entries kept in memory before they are flushed to disk.
-Default: 1000
+
+Default value: `1000`
 
 ##### <a name="anonymize_client_ip"></a>`anonymize_client_ip`
 
 Data type: `Boolean`
 
 If true, anonymize clients' IP addresses in logs and stats.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="protection_enabled"></a>`protection_enabled`
 
 Data type: `Boolean`
 
 Whether any kind of filtering and protection should be done, when off it works as a plain dns forwarder.
-Default: to true
+
+Default value: ``true``
 
 ##### <a name="blocking_mode"></a>`blocking_mode`
 
@@ -217,69 +256,85 @@ Valid options:
   - default (respond with NXDOMAIN status)
   - null_ip (respond with the unspecified IP address (0.0.0.0))
   - custom_ip (respond with blocking_ipv4 or blocking_ipv6 address)
-Default: default
+
+Default value: `'default'`
 
 ##### <a name="blocking_ipv4"></a>`blocking_ipv4`
 
 Data type: `Optional[Stdlib::IP::Address::V4::Nosubnet]`
 
 IP address to be returned for a blocked A request if blocking_mode is set to custom_ip.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="blocking_ipv6"></a>`blocking_ipv6`
 
 Data type: `Optional[Stdlib::IP::Address::V6]`
 
 IP address to be returned for a blocked AAAA request if blocking_mode is set to custom_ip.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="blocked_response_ttl"></a>`blocked_response_ttl`
 
 Data type: `Integer`
 
-For how many seconds the clients should cache a filtered response. Low values are useful on LAN if you change filters very often, high values are useful to increase performance and save traffic.
-Default: 10
+For how many seconds the clients should cache a filtered response. Low values are useful on LAN if you change filters very often,
+high values are useful to increase performance and save traffic.
+
+Default value: `10`
 
 ##### <a name="parental_block_host"></a>`parental_block_host`
 
 Data type: `Variant[Stdlib::Fqdn,Stdlib::IP::Address]`
 
 IP (or domain name) which is used to respond to DNS requests blocked by parental control.
-Default: family-block.dns.adguard.com
+
+Default value: `'family-block.dns.adguard.com'`
 
 ##### <a name="safebrowsing_block_host"></a>`safebrowsing_block_host`
 
 Data type: `Variant[Stdlib::Fqdn,Stdlib::IP::Address]`
 
 IP (or domain name) which is used to respond to DNS requests blocked by safe-browsing.
-Default: standard-block.dns.adguard.com
+
+Default value: `'standard-block.dns.adguard.com'`
 
 ##### <a name="ratelimit"></a>`ratelimit`
 
 Data type: `Integer`
 
-DDoS protection, specifies in how many packets per second a client should receive. Anything above that is silently dropped. To disable set 0, default is 20. Safe to disable if DNS server is not available from internet.
-Default: 20
+DDoS protection, specifies in how many packets per second a client should receive.
+Anything above that is silently dropped.
+To disable set 0, default is 20. Safe to disable if DNS server is not available from internet.
+
+Default value: `20`
 
 ##### <a name="ratelimit_whitelist"></a>`ratelimit_whitelist`
 
-Data type: `Optional[Tuple[Stdlib::IP::Address,1,default]]`
+Data type: `Optional[Array[Stdlib::IP::Address]]`
 
 An array of ip addresses to whitelist from ratelimiting.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="refuse_any"></a>`refuse_any`
 
 Data type: `Boolean`
 
-Another DDoS protection mechanism. Requests of type ANY are rarely needed, so refusing to serve them mitigates against attackers trying to use your DNS as a reflection. Safe to disable if DNS server is not available from internet.
-Default: true
+Another DDoS protection mechanism.
+Requests of type ANY are rarely needed, so refusing to serve them mitigates against attackers trying to use your DNS as a reflection.
+Safe to disable if DNS server is not available from internet.
+
+Default value: ``true``
 
 ##### <a name="upstream_dns"></a>`upstream_dns`
 
-Data type: `Tuple[Variant[Stdlib::IP::Address,Stdlib::HTTPUrl],1,4]`
+Data type: `Array[Adguard::Dns_server]`
 
 An array of upstream DNS servers. Can be a URL or IP.
+
+Default value: `['https://dns10.quad9.net/dns-query']`
 
 ##### <a name="upstream_dns_file"></a>`upstream_dns_file`
 
@@ -287,288 +342,317 @@ Data type: `Optional[Stdlib::Unixpath]`
 
 Path to a file with the list of upstream DNS servers. If it is configured, the value of upstream_dns is ignored. Defaults to undef
 
+Default value: ``undef``
+
 ##### <a name="bootstrap_dns"></a>`bootstrap_dns`
 
-Data type: `Tuple[Stdlib::IP::Address,1,default]`
+Data type: `Array[Stdlib::IP::Address]`
 
 List of DNS servers used for initial hostname resolution in case an upstream server name is a hostname.
-Default:
-  - 9.9.9.9
-  - 8.8.8.8
-  - 2620:fe::fe
-  - 2620:fe::9
+
+Default value: `[
+    '9.9.9.10',
+    '149.112.112.10',
+    '2620:fe::10',
+    '2620:fe::fe:10'
+  ]`
 
 ##### <a name="all_servers"></a>`all_servers`
 
 Data type: `Boolean`
 
-Enables parallel queries to all configured upstream servers to speed up resolving. If disabled, the queries are sent to each upstream server one-by-one and then sorted by RTT.
-Default: false
+Enables parallel queries to all configured upstream servers to speed up resolving.
+If disabled, the queries are sent to each upstream server one-by-one and then sorted by RTT.
+
+Default value: ``false``
 
 ##### <a name="fastest_addr"></a>`fastest_addr`
 
 Data type: `Boolean`
 
 Use Fastest Address algorithm. It finds an IP address with the lowest latency and returns this IP address in DNS response.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="allowed_clients"></a>`allowed_clients`
 
-Data type: `Optional[Tuple[Stdlib::IP::Address,1,default]]`
+Data type: `Optional[Array[Stdlib::IP::Address]]`
 
 IP addresses of allowed clients.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="disallowed_clients"></a>`disallowed_clients`
 
-Data type: `Optional[Tuple[Stdlib::IP::Address,1,default]]`
+Data type: `Optional[Array[Stdlib::IP::Address]]`
 
 IP addresses of disallowed clients.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="blocked_hosts"></a>`blocked_hosts`
 
 Data type: `Array`
 
 An array of hosts to block.
-Default: undef
+
+Default value: `[
+    'version.bind',
+    'id.server',
+    'hostname.bind'
+  ]`
 
 ##### <a name="dns_cache_size"></a>`dns_cache_size`
 
 Data type: `Integer`
 
 DNS cache size (in bytes).
-Default: 4194304
+
+Default value: `4194304`
 
 ##### <a name="dns_cache_ttl_min"></a>`dns_cache_ttl_min`
 
 Data type: `Integer[default,3600]`
 
 Override TTL value (minimum) received from upstream server. This value can't larger than 3600 (1 hour).
-Default: 0 (do not override)
+
+Default value: `0`
 
 ##### <a name="dns_cache_ttl_max"></a>`dns_cache_ttl_max`
 
 Data type: `Integer[default,3600]`
 
 Override TTL value (maximum) received from upstream server.
-Default: 0 (do not override)
+
+Default value: `0`
 
 ##### <a name="bogus_nxdomain"></a>`bogus_nxdomain`
 
-Data type: `Optional[Tuple[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet,1,default]]`
+Data type: `Optional[Array[Adguard::Dns_server]]`
 
-Optional - Transform responses with these IP addresses to NXDOMAIN
+Transform responses with these IP addresses to NXDOMAIN
+
+Default value: ``undef``
 
 ##### <a name="aaaa_disabled"></a>`aaaa_disabled`
 
 Data type: `Boolean`
 
 Respond with an empty answer to all AAAA requests
-Default: false
+
+Default value: ``false``
 
 ##### <a name="enable_dnssec"></a>`enable_dnssec`
 
 Data type: `Boolean`
 
 Set DNSSEC flag in the outgoing DNS requests and check the result.
-Note if running an additional DNS server (such as Unbound or BIND) that uses DNSSEC you do not want DNSSEC on both as you will get erroes with legitimate DNS requests.
-Default: false
+Note if running an additional DNS server (such as Unbound or BIND) that uses DNSSEC you do not want DNSSEC on both
+as you will get erroes with legitimate DNS requests.
+
+Default value: ``false``
 
 ##### <a name="edns_client_subnet"></a>`edns_client_subnet`
 
 Data type: `Boolean`
 
-Enable EDNS Client Subnet option. If enabled, AdGuard Home will be sending ECS extension to the upstream DNS servers. Please note, that this will be done for clients with public IP addresses only.
-Default: false
+Enable EDNS Client Subnet option. If enabled, AdGuard Home will be sending ECS extension to the upstream DNS servers.
+Please note, that this will be done for clients with public IP addresses only.
+
+Default value: ``false``
 
 ##### <a name="max_goroutines"></a>`max_goroutines`
 
 Data type: `Integer`
 
 Max. number of parallel goroutines for processing incoming requests
-Default: 300
+
+Default value: `300`
 
 ##### <a name="filtering_enabled"></a>`filtering_enabled`
 
 Data type: `Boolean`
 
 Filtering of DNS requests based on filter lists.
-Default: true
+
+Default value: ``true``
 
 ##### <a name="filters_update_interval"></a>`filters_update_interval`
 
 Data type: `Integer`
 
 How often the filters update (in hours).
-Default: 24.
+
+Default value: `24`
 
 ##### <a name="parental_enabled"></a>`parental_enabled`
 
 Data type: `Boolean`
 
 Parental control-based DNS requests filtering
-Default: false
+
+Default value: ``false``
 
 ##### <a name="safesearch_enabled"></a>`safesearch_enabled`
 
 Data type: `Boolean`
 
 Enforcing "Safe search" option for search engines, when possible.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="safebrowsing_enabled"></a>`safebrowsing_enabled`
 
 Data type: `Boolean`
 
 Filtering of DNS requests based on safebrowsing
-Default: false
+
+Default value: ``false``
 
 ##### <a name="safebrowsing_cache_size"></a>`safebrowsing_cache_size`
 
 Data type: `Integer`
 
 Safe Browsing cache size (in bytes).
-Default: 1048576
+
+Default value: `1048576`
 
 ##### <a name="safesearch_cache_size"></a>`safesearch_cache_size`
 
 Data type: `Integer`
 
 Safe Search cache size (in bytes).
-Default: 1048576
+
+Default value: `1048576`
 
 ##### <a name="parental_cache_size"></a>`parental_cache_size`
 
 Data type: `Integer`
 
 Parental Control cache size (in bytes).
-Default: 1048576
+
+Default value: `1048576`
 
 ##### <a name="cache_time"></a>`cache_time`
 
 Data type: `Integer`
 
 Safe Browsing, Safe Search, Parental Control cache TTL.
-Default: 30
+
+Default value: `30`
 
 ##### <a name="rewrites"></a>`rewrites`
 
-Data type: `Optional[Struct[
-    domain => String,
-    answer => String,
-  ]]`
+Data type: `Optional[Array[Adguard::Rewrite]]`
 
 An array of custom rewrite rules
 Format:
-  domain: the domain to perform the rewrite on
-  answer: the ip address to point to
-Default: undef
+   - domain: the domain to perform the rewrite on
+   - answer: the ip address to point to
+
+Default value: ``undef``
 
 ##### <a name="blocked_services"></a>`blocked_services`
 
-Data type: `Optional[Tuple[Adguard::Blocked_service,1,default]]`
+Data type: `Optional[Array[Adguard::Blocked_service]]`
 
 An array of any services you wish to block.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="filters"></a>`filters`
 
-Data type: `Tuple[Struct[
-    name => String,
-    enabled => Boolean,
-    url => Stdlib::HTTPUrl,
-  ],1,default]`
+Data type: `Array[Adguard::Filter]`
 
-An array of block filters to add.
-Format
-  name: the name for the filter (eg AdGuard Default)
-  enabled: true/false
-  url: the URL to point to
-Default: the default list provided by AdGuard
+An array of block filters to add. Will default to the standard list provided by AdGuard
+Format:
+  - name: the name for the filter (eg AdGuard Default)
+  - enabled: true/false
+  - url: the URL to point to
+
+Default value: `$adguard::params::filters`
 
 ##### <a name="whitelist_filters"></a>`whitelist_filters`
 
-Data type: `Optional[Tuple[Struct[
-    name => String,
-    enabled => Boolean,
-    url => Stdlib::HTTPUrl,
-  ],1,default]]`
+Data type: `Optional[Array[Adguard::Filter]]`
 
 An array of whitelist filters to add.
-  name: the name for the filter (eg AdGuard Default)
-  enabled: true/false
-  url: the URL to point to
-Default: undef
+Format:
+  - name: the name for the filter (eg AdGuard Default)
+  - enabled: true/false
+  - url: the URL to point to
+
+Default value: ``undef``
 
 ##### <a name="user_rules"></a>`user_rules`
 
 Data type: `Optional[Array]`
 
 Any custom rules you'd like to define, optional.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="clients"></a>`clients`
 
-Data type: `Optional[Tuple[Struct[
-    name => String,
-    tags => Optional[Array],
-    ids => Array,
-    use_global_settings => Boolean,
-    filtering_enabled => Optional[Boolean],
-    parental_enabled  => Optional[Boolean],
-    safesearch_enabled => Optional[Boolean],
-    use_global_blocked_services => Boolean,
-    blocked_services => Optional[Array],
-    upstreams => Optional[Array]
-  ],1,default]]`
+Data type: `Optional[Array[Adguard::Client]]`
 
-EXPERIMENTAL: Individual client settings
+EXPERIMENTAL: Override global defaults for a given list of clients.
+See: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients for details
 Not extensively tested, please report any issues on the project repo.
-Default: undef
+
+Default value: ``undef``
 
 ##### <a name="log_compress"></a>`log_compress`
 
 Data type: `Boolean`
 
 Whether or not to compress the logs.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="log_localtime"></a>`log_localtime`
 
 Data type: `Boolean`
 
 Whether to format timestamps using computer's local time.
-Default: false
+
+Default value: ``false``
 
 ##### <a name="log_max_backups"></a>`log_max_backups`
 
 Data type: `Integer`
 
 Maximum number of old log files to retain (MaxAge may still cause them to get deleted) (default: 0, which retains all old log files)
-Defaults to 0.
+
+Default value: `0`
 
 ##### <a name="log_max_size"></a>`log_max_size`
 
 Data type: `Integer`
 
 Maximum size in megabytes of the log file before it gets rotated.
-Defaults: 100
+
+Default value: `100`
 
 ##### <a name="log_max_age"></a>`log_max_age`
 
 Data type: `Integer`
 
 MaxAge is the maximum number of days to retain old log files.
-Default: 3
+
+Default value: `3`
 
 ##### <a name="log_file"></a>`log_file`
 
-Data type: `Variant[Stdlib::Unixpath,Enum['syslog'],Undef]`
+Data type: `Adguard::Log_file`
 
 Path to the log file. If empty, writes to stdout, if syslog -- system log (or eventlog on Windows).
-Valid options are: unixpath, undef or 'syslog'.
-Default: undef
+Valid options are:
+  - unixpath
+  - undef
+  - syslog
+
+Default value: ``undef``
 
 ##### <a name="verbose_logging"></a>`verbose_logging`
 
@@ -576,28 +660,31 @@ Data type: `Boolean`
 
 Enable or disable verbose logging. Defaults to false
 
+Default value: ``false``
+
 ##### <a name="adguard_path"></a>`adguard_path`
 
 Data type: `Stdlib::Unixpath`
 
 The path to where you'd like AdGuard installed, defaults to /opt/AdGuardHome
 
+Default value: `'/opt/AdGuardHome'`
+
 ##### <a name="manage_config"></a>`manage_config`
 
 Data type: `Boolean`
 
 Whether or not to manage the AdGuardHome.yaml file
-This is designed as a failsafe option (see Disabling configuration file management in the README)
-If the the file format changes drastically in the future you can set this to false to stop Puppet fighting with AdGuardHome.
-The initial configuration file will always be created by Puppet.
-Default: true
+
+Default value: ``true``
 
 ##### <a name="configuration_file"></a>`configuration_file`
 
-Data type: `Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/]`
+Data type: `Adguard::Config_file`
 
-The path to where you want to store the configuration file, must be a full path to AdGuardHome.yaml.
-Default: a child of adguard::adguard_path
+The path to where you want to store the configuration file, must be the full path to AdGuardHome.yaml.
+
+Default value: `"${adguard_path}/AdGuardHome.yaml"`
 
 ##### <a name="service_name"></a>`service_name`
 
@@ -605,11 +692,15 @@ Data type: `String`
 
 The name of the service to manage, defaults to AdGuardHome
 
+Default value: `'AdGuardHome'`
+
 ##### <a name="version"></a>`version`
 
 Data type: `String`
 
 The version to install from the GitHub release
+
+Default value: `'latest'`
 
 ## Data types
 
@@ -622,4 +713,221 @@ Alias of
 ```puppet
 Enum['9gag', 'amazon', 'cloudflare', 'dailymotion', 'discord', 'disneyplus', 'ebay', 'epic_games', 'facebook', 'hulu', 'imgur', 'instagram', 'mail_ru', 'netflix', 'ok', 'origin', 'pinterest', 'qq', 'reddit', 'skype', 'snapchat', 'spotify', 'steam', 'telegram', 'tiktok', 'tinder', 'twitch', 'twitter', 'viber', 'vimeo', 'vk', 'wechat', 'weibo', 'whatsapp', 'youtube']
 ```
+
+### <a name="adguardclient"></a>`Adguard::Client`
+
+Provides a structure for defining client overrides.
+For more information see the official AdGuard docs: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
+
+#### Examples
+
+##### 
+
+```puppet
+{
+   name => 'My Laptop',
+   tags => ['my_tag'],
+   ids  => ['00:1B:44:11:3A:B7'],
+   use_global_settings => false,
+   filtering_enabled => true,
+   parental_enabled => false,
+   safesearch_enabled => false,
+   use_global_blocked_services => false,
+   blocked_services => ['Facebook'],
+   upstreams => ['8.8.8.8']
+}
+```
+
+Alias of
+
+```puppet
+Struct[=>]
+```
+
+#### Parameters
+
+The following parameters are available in the `Adguard::Client` data type:
+
+* [`name`](#name)
+* [`tags`](#tags)
+* [`ids`](#ids)
+* [`use_global_settings`](#use_global_settings)
+* [`filtering_enabled`](#filtering_enabled)
+* [`parental_enabled`](#parental_enabled)
+* [`safesearch_enabled`](#safesearch_enabled)
+* [`use_global_blocked_services`](#use_global_blocked_services)
+* [`blocked_services`](#blocked_services)
+* [`upstreams`](#upstreams)
+
+##### <a name="name"></a>`name`
+
+The name of the client.
+
+##### <a name="tags"></a>`tags`
+
+Any tags to provide for the client
+
+##### <a name="ids"></a>`ids`
+
+An array of ids to use for the client (usually MAC address)
+
+##### <a name="use_global_settings"></a>`use_global_settings`
+
+Whether or not to use the global settings
+
+##### <a name="filtering_enabled"></a>`filtering_enabled`
+
+Whether to enable or disable filtering for this client
+
+##### <a name="parental_enabled"></a>`parental_enabled`
+
+Whether to enable or disable parental filtering for this client
+
+##### <a name="safesearch_enabled"></a>`safesearch_enabled`
+
+Whether to force safesearches on this client or not
+
+##### <a name="use_global_blocked_services"></a>`use_global_blocked_services`
+
+Whether to override the global_blocked_services for this client or not
+
+##### <a name="blocked_services"></a>`blocked_services`
+
+Which services to block for this client
+
+##### <a name="upstreams"></a>`upstreams`
+
+Override upstream DNS servers for this client
+
+### <a name="adguardconfig_file"></a>`Adguard::Config_file`
+
+Simple regex check for the AdGuard config file
+
+Alias of
+
+```puppet
+Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/]
+```
+
+### <a name="adguarddns_server"></a>`Adguard::Dns_server`
+
+Valid DNS server types
+
+Alias of
+
+```puppet
+Variant[Stdlib::IP::Address, Stdlib::HTTPUrl, Adguard::Ipv4_port]
+```
+
+### <a name="adguardfilter"></a>`Adguard::Filter`
+
+Used to manage filters in Adguard
+
+#### Examples
+
+##### 
+
+```puppet
+{
+    name => 'My Filter',
+    enabled => true,
+    url => 'http://filters.com/myfilter.txt',
+}
+```
+
+Alias of
+
+```puppet
+Struct[=>]
+```
+
+#### Parameters
+
+The following parameters are available in the `Adguard::Filter` data type:
+
+* [`name`](#name)
+* [`enabled`](#enabled)
+* [`url`](#url)
+
+##### <a name="name"></a>`name`
+
+The name of the filter.
+
+##### <a name="enabled"></a>`enabled`
+
+Whether to enabled or disable the filter.
+
+##### <a name="url"></a>`url`
+
+The url to the filter.
+
+### <a name="adguardipv4_port"></a>`Adguard::Ipv4_port`
+
+Accepts an IPV4 address with a port (eg 192.168.1.1:8080)
+
+Alias of
+
+```puppet
+Pattern[/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}/]
+```
+
+### <a name="adguardlog_file"></a>`Adguard::Log_file`
+
+Supported log file types
+
+Alias of
+
+```puppet
+Variant[Stdlib::Unixpath, Enum['syslog'], Undef]
+```
+
+### <a name="adguardrewrite"></a>`Adguard::Rewrite`
+
+Stuctured hash for managing rewrites
+
+Alias of
+
+```puppet
+Struct[=>]
+```
+
+#### Parameters
+
+The following parameters are available in the `Adguard::Rewrite` data type:
+
+* [`domain`](#domain)
+* [`answer`](#answer)
+
+##### <a name="domain"></a>`domain`
+
+The domain to create the rewrite rule for
+
+##### <a name="answer"></a>`answer`
+
+The answer to return
+
+### <a name="adguarduser"></a>`Adguard::User`
+
+A structed hash for providing users for the adguard web UI.
+
+Alias of
+
+```puppet
+Struct[=>]
+```
+
+#### Parameters
+
+The following parameters are available in the `Adguard::User` data type:
+
+* [`username`](#username)
+* [`password`](#password)
+
+##### <a name="username"></a>`username`
+
+The username used to login
+
+##### <a name="password"></a>`password`
+
+The password in BCrypt-encrypted format
 
