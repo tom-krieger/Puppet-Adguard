@@ -145,7 +145,8 @@
 # @param user_rules
 #   Any custom rules you'd like to define, optional.
 # @param clients
-#   EXPERIMENTAL: Individual client settings
+#   EXPERIMENTAL: Override global defaults for a given list of clients.
+#   See: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients for details
 #   Not extensively tested, please report any issues on the project repo.
 # @param log_compress
 #   Whether or not to compress the logs. 
