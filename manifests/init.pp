@@ -159,7 +159,10 @@
 #   MaxAge is the maximum number of days to retain old log files. 
 # @param log_file
 #   Path to the log file. If empty, writes to stdout, if syslog -- system log (or eventlog on Windows).
-#   Valid options are: unixpath, undef or 'syslog'.
+#   Valid options are: 
+#     - unixpath
+#     - undef 
+#     - syslog
 # @param verbose_logging
 #   Enable or disable verbose logging. Defaults to false
 # @param adguard_path
@@ -167,7 +170,7 @@
 # @param manage_config
 #   Whether or not to manage the AdGuardHome.yaml file
 # @param configuration_file
-#   The path to where you want to store the configuration file, must be a full path to AdGuardHome.yaml. 
+#   The path to where you want to store the configuration file, must be the full path to AdGuardHome.yaml. 
 # @param service_name
 #   The name of the service to manage, defaults to AdGuardHome
 # @param version
@@ -178,7 +181,7 @@ class adguard
   Stdlib::IP::Address::V4::Nosubnet $webui_interface = '0.0.0.0',
   Stdlib::Port $webui_port = 80,
   Optional[Stdlib::HTTPUrl] $http_proxy = undef,
-  Integer $rlimit_nofile = undef,
+  Integer $rlimit_nofile = 0,
   Boolean $debug_pprof = false,
   Integer $web_session_ttl = 8,
   Stdlib::IP::Address::V4::Nosubnet $dns_interface = '0.0.0.0',
@@ -201,7 +204,7 @@ class adguard
   Boolean $refuse_any = true,
   Array[Adguard::Dns_server] $upstream_dns = ['https://dns10.quad9.net/dns-query'],
   Optional[Stdlib::Unixpath] $upstream_dns_file = undef,
-  Tuple[Stdlib::IP::Address,1,default] $bootstrap_dns = [
+  Array[Stdlib::IP::Address] $bootstrap_dns = [
     '9.9.9.10',
     '149.112.112.10',
     '2620:fe::10',
@@ -209,17 +212,17 @@ class adguard
   ],
   Boolean $all_servers = false,
   Boolean $fastest_addr = false,
-  Optional[Tuple[Stdlib::IP::Address,1,default]] $allowed_clients = undef,
-  Optional[Tuple[Stdlib::IP::Address,1,default]] $disallowed_clients = undef,
+  Optional[Array[Stdlib::IP::Address]] $allowed_clients = undef,
+  Optional[Array[Stdlib::IP::Address]] $disallowed_clients = undef,
   Array $blocked_hosts = [
     'version.bind',
     'id.server',
     'hostname.bind'
   ],
   Integer $dns_cache_size = 4194304,
-  Integer[default,3600] $dns_cache_ttl_min = 0,
-  Integer[default,3600] $dns_cache_ttl_max = 0,
-  Optional[Tuple[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet,1,default]] $bogus_nxdomain = undef,
+  Integer[0,3600] $dns_cache_ttl_min = 0,
+  Integer[0,3600] $dns_cache_ttl_max = 0,
+  Optional[Array[Stdlib::Fqdn,Stdlib::IP::Address::V4::Nosubnet]] $bogus_nxdomain = undef,
   Boolean $aaaa_disabled = false,
   Boolean $enable_dnssec = false,
   Boolean $edns_client_subnet = false,
@@ -245,10 +248,10 @@ class adguard
   Integer $log_max_size = 100,
   Integer $log_max_age = 3,
   Boolean $verbose_logging = false,
-  Variant[Stdlib::Unixpath,Enum['syslog'],Undef] $log_file = undef,
+  Adguard::Log_file $log_file = undef,
   Stdlib::Unixpath $adguard_path = '/opt/AdGuardHome',
   Boolean $manage_config = true,
-  Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/] $configuration_file = "${adguard_path}/AdGuardHome.yaml",
+  Adguard::Config_file $configuration_file = "${adguard_path}/AdGuardHome.yaml",
   String $service_name = 'AdGuardHome',
   String $version = 'latest',
 )
