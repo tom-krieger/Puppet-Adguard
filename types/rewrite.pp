@@ -1,6 +1,6 @@
 # @summary
 #   Stuctured array for managing rewrites
-type Adguard::Rewrites = Tuple[Struct[
+type Adguard::Rewrite = Struct[
     domain => String,
     answer => String,
-],1,default]
+]
