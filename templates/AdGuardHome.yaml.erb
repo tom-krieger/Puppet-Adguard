@@ -156,15 +156,15 @@ dhcp:
   enabled: <%= @enable_dhcp %>
   interface_name: "<%= @dhcp_interface %>"
   dhcpv4:
-    gateway_ip: "<%= @dhcp_v4_options['gateway_ip'] %>"
-    subnet_mask: "<%= @dhcp_v4_options['subnet_mask'] %>"
-    range_start: "<%= @dhcp_v4_options['range_start'] %>"
-    range_end: "<%= @dhcp_v4_options['range_end'] %>"
-    lease_duration: <%= @dhcp_v4_options['lease_duration'] %>
+    gateway_ip: "<%= dhcp_v4_options['gateway_ip'] %>"
+    subnet_mask: "<%= dhcp_v4_options['subnet_mask'] %>"
+    range_start: "<%= dhcp_v4_options['range_start'] %>"
+    range_end: "<%= dhcp_v4_options['range_end'] %>"
+    lease_duration: <%= dhcp_v4_options['lease_duration'] %>
     icmp_timeout_msec: 1000
-<% if @dhcp_v4_options['options'] -%>
+<% if dhcp_v4_options['options'] -%>
     options:
-<% @dhcp_v4_options['options'].each do |opt| -%>
+<% dhcp_v4_options['options'].each do |opt| -%>
       - <%= opt %>
 <% end -%>
 <% else -%>
