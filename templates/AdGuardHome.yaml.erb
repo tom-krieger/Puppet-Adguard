@@ -174,10 +174,10 @@ dhcp:
     options:
 <% @dhcp_v4_options['options'].each do |opt| -%>
       - <%= opt %>
-<% end -%>
-<% end -%>
 <% else -%>
     options: []
+<% end -%>
+<% end -%>
 <% end -%>
   dhcpv6:
     range_start: ""
