@@ -23,6 +23,8 @@ class {'adguard':
 }
 ```
 This will download AdGuardHome and install it with default parameters and provide access to the user `user` with a password of `password`.  
+**Note**: AdGuard requires the password to be in BCrypt-encrypted format, to get a password you can run the following on most *nix systems:  
+`htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
 
 # Usage
 
@@ -109,10 +111,34 @@ By default the following bootstrap servers are configured:
 - '149.112.112.10'
 - '2620:fe::10'
 - '2620:fe::fe:10'
-- 
+
 These can be changed by changing the `bootstrap_dns` parameter.
 
-## Disabling configuration file management
+## Configuring client overrides
+You may wish to have some clients get a different set of settings rather than the global defaults, you can use the `adguard::clinets` parameter to specify these:
+```puppet
+class {'adguard':
+    users => [{
+        username => 'user',
+        password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
+    }],
+    clients => [{
+      name => 'My Laptop',
+      tags => ['my_tag'],
+      ids  => ['00:1B:44:11:3A:B7'],
+      use_global_settings => false,
+      filtering_enabled => true,
+      parental_enabled => false,
+      safesearch_enabled => false,
+      use_global_blocked_services => false,
+      blocked_services => ['Facebook'],
+      upstreams => ['8.8.8.8']
+    }]
+```
+For more information on this please see the [official AdGuard documentation](https://github.com/AdguardTeam/AdGuardHome/wiki/Clients#newclient)
+
+# Know Limitations
+## Configuration overwriting itself/Disabling configuration file management
 Due to the fact this module manages configuration of AdGuard by manipulating the `AdGuardHome.yaml` file there may be instances where Puppet fights against AdGuard Home with both trying to change the contents of the file. 
 
 This is only likely to happen when AdGuard have made changes to the way in which the configuration file is constructed (for example a new parameter has been added, or an existing one modified during an update). 
@@ -131,7 +157,10 @@ You may also wish to disable configuration file managment if you prefer to use t
 
 If your configuration file has been overwritten Puppet will back it up before overwritting it, it will be stored in the same directory as the configuration file with a `.puppet` extension.  
 
-# Know Limitations
+## Systemd/Resolvd and AdGuard
+By default Resolvd will claim port `53` for `DNSStubListener` meaning AdGuard will fail to start when bound to port 53.  
+In these cases this module will disable `DNSStubListener` in `/etc/systemd/resolved.conf` which **WILL BREAK** local DNS lookups if AdGuard is ever removed and the setting is not changed back manually.
+
 ## Unsupported features
 Currently this module does not support:
 - DHCP
