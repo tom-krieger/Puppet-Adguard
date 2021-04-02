@@ -131,7 +131,7 @@
 # @param blocked_services
 #   An array of any services you wish to block.
 # @param enable_tls
-#   EXPERIMENTAL: enable TLS
+#   EXPERIMENTAL: enable TLS. This workflow is largely untested, use with caution.
 # @param tls_options
 #   The TLS configuration options.
 # @param filters
