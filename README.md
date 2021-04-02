@@ -137,7 +137,7 @@ class {'adguard':
 For more information on this please see the [official AdGuard documentation](https://github.com/AdguardTeam/AdGuardHome/wiki/Clients#newclient)
 
 ## Configuring DHCP
-AdGuard Home supports acting as a DHCP server
+AdGuard Home supports acting as a DHCP server and as of v0.2.0 this module allows for configuration of those options.  
 To enable DHCP you would need to set `enable_dhcp` to `true`, specify a `dhcp_interface` and then specify your `dhcp_v4_options`/`dhcp_v6_options`  
 Example:  
 ```puppet
