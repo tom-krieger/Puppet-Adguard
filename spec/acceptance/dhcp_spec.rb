@@ -30,9 +30,9 @@ describe 'adguard_dhcp' do
 
   describe file('/opt/AdGuardHome/AdGuardHome.yaml') do
     it { is_expected.to be_file }
-    it { is_expected.to match %r{gateway_ip: 192.168.1.1} }
-    it { is_expected.to match %r{subnet_mask: 255.255.255.0} }
-    it { is_expected.to match %r{range_start: 192.168.1.2} }
-    it { is_expected.to match %r{range_end: 192.168.1.20} }
+    it { is_expected.to contain %r{gateway_ip: 192.168.1.1} }
+    it { is_expected.to contain %r{subnet_mask: 255.255.255.0} }
+    it { is_expected.to contain %r{range_start: 192.168.1.2} }
+    it { is_expected.to contain %r{range_end: 192.168.1.20} }
   end
 end
