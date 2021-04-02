@@ -99,6 +99,7 @@ The following parameters are available in the `adguard` class:
 * [`enable_dnssec`](#enable_dnssec)
 * [`edns_client_subnet`](#edns_client_subnet)
 * [`max_goroutines`](#max_goroutines)
+* [`ipset_rules`](#ipset_rules)
 * [`filtering_enabled`](#filtering_enabled)
 * [`filters_update_interval`](#filters_update_interval)
 * [`parental_enabled`](#parental_enabled)
@@ -482,6 +483,14 @@ Data type: `Integer`
 Max. number of parallel goroutines for processing incoming requests
 
 Default value: `300`
+
+##### <a name="ipset_rules"></a>`ipset_rules`
+
+Data type: `Optional[Array]`
+
+Set ipset rules
+
+Default value: ``undef``
 
 ##### <a name="filtering_enabled"></a>`filtering_enabled`
 
