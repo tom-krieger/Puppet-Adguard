@@ -150,6 +150,8 @@
 #   The network interface to enabled DHCP on (eg 'eth0')
 # @param dhcp_v4_options
 #   The configuration options for IPV4 DHCP
+# @param dhcp_v6_options
+#   The configuration options for IPV6 DHCP
 # @param clients
 #   EXPERIMENTAL: Override global defaults for a given list of clients.
 #   See: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients for details
@@ -299,16 +301,16 @@ inherits adguard::params
   if ($enable_dhcp == true)
   {
     # Ensure we have options configured
-    if (!$dhcp_interface or !$dhcp_v4_options)
+    if (!$dhcp_interface or (!$dhcp_v4_options and !$dhcp_v6_options))
     {
-      fail('dhcp_interface and dhcp_v4_options must be declared when enabled_dhcp is true')
+      fail('dhcp_interface and either dhcp_v4_options or dhcp_v6_options must be declared when enabled_dhcp is set to true')
     }
   }
   else
   {
-    if ($dhcp_interface or $dhcp_v4_options)
+    if ($dhcp_interface or $dhcp_v4_options or $dhcp_v6_options)
     {
-      warning('dhcp_interface and/or dhcp_v4_options set when enable_dhcp is false. DHCP options will have no effect')
+      warning('dhcp_interface and/or dhcp_vX_options set when enable_dhcp is false. DHCP options will have no effect')
     }
   }
   # Puppet has excellent facts, make use of them
