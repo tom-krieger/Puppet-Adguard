@@ -156,7 +156,7 @@ class {'adguard':
       lease_duration => 86400, # in seconds
     }
 ```
-You can also specify custom DHCP options via the `options` parameter, these should be given as `CODE hex HEX_VALUE` (eg `6 hex 0102030401020305`).  
+If you'd like to enable special DHCP options this can be done via the `options` parameter, these should be given as `CODE hex HEX_VALUE` (eg `6 hex 0102030401020305`).  
 ```puppet
 class {'adguard':
     users => [{
