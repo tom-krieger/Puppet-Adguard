@@ -1,7 +1,9 @@
 # Tests applying adguard with basic DHCP options
 require 'spec_helper_acceptance'
 
-pp_dhcp = <<-MANIFEST
+describe 'adguard_dhcp' do
+  it 'applies succesfully' do
+    dhcp_pp = <<-MANIFEST
     class {'adguard':
         users => [
           {
@@ -19,10 +21,9 @@ pp_dhcp = <<-MANIFEST
         }
     }
 MANIFEST
+    idempotent_apply(dhcp_pp)
+  end
 
-idempotent_apply(pp_dhcp)
-
-describe 'adguard_dhcp' do
   describe service('AdGuardHome') do
     it { is_expected.to be_enabled }
     it { is_expected.to be_running }
@@ -30,9 +31,11 @@ describe 'adguard_dhcp' do
 
   describe file('/opt/AdGuardHome/AdGuardHome.yaml') do
     it { is_expected.to be_file }
-    it { is_expected.to contain '    gateway_ip: 192.168.1.1' }
-    it { is_expected.to contain '    subnet_mask: 255.255.255.0' }
-    it { is_expected.to contain '    range_start: 192.168.1.2' }
-    it { is_expected.to contain '    range_end: 192.168.1.20' }
+    it { is_expected.to contain %r{interface_name: eth0} }
+    it { is_expected.to contain %r{gateway_ip: 192.168.1.1} }
+    it { is_expected.to contain %r{subnet_mask: 255.255.255.0} }
+    it { is_expected.to contain %r{range_start: 192.168.1.2} }
+    it { is_expected.to contain %r{range_end: 192.168.1.20} }
+    it { is_expected.to contain %r{lease_duration: 86400} }
   end
 end
