@@ -14,6 +14,10 @@
 
 * `adguard::params`: Private class for managing some of the more complex default parameters
 
+### Functions
+
+* [`adguard::validate_tls_options`](#adguardvalidate_tls_options): This function ensures that the TLS config is valid before applying it.
+
 ### Data types
 
 * [`Adguard::Blocked_service`](#adguardblocked_service): A list of services that AdGuard Home is able to block out of the box.
@@ -24,9 +28,11 @@
 * [`Adguard::Dhcp_v6_options`](#adguarddhcp_v6_options): A structured hash for sepcifying DHCP options for IPV6
 * [`Adguard::Dns_server`](#adguarddns_server): Valid DNS server types
 * [`Adguard::Filter`](#adguardfilter): Used to manage filters in Adguard
+* [`Adguard::Http_proxy`](#adguardhttp_proxy): Very basic validation to ensure the proxy type is sensible
 * [`Adguard::Ipv4_port`](#adguardipv4_port): Accepts an IPV4 address with a port (eg 192.168.1.1:8080)
 * [`Adguard::Log_file`](#adguardlog_file): Supported log file types
 * [`Adguard::Rewrite`](#adguardrewrite): Stuctured hash for managing rewrites
+* [`Adguard::Tls_options`](#adguardtls_options): Configures TLS options in AdGuard Home
 * [`Adguard::User`](#adguarduser): A structed hash for providing users for the adguard web UI.
 
 ## Classes
@@ -104,6 +110,8 @@ The following parameters are available in the `adguard` class:
 * [`cache_time`](#cache_time)
 * [`rewrites`](#rewrites)
 * [`blocked_services`](#blocked_services)
+* [`enable_tls`](#enable_tls)
+* [`tls_options`](#tls_options)
 * [`filters`](#filters)
 * [`whitelist_filters`](#whitelist_filters)
 * [`user_rules`](#user_rules)
@@ -150,7 +158,7 @@ Note: the password needs to be in BCrypt-encrypted format.
 
 ##### <a name="http_proxy"></a>`http_proxy`
 
-Data type: `Optional[Stdlib::HTTPUrl]`
+Data type: `Optional[Adguard::Http_proxy]`
 
 Define an optional http_proxy.
 While adguard supports SOCKS5 alongside HTTP/S, this is **not** supported in the Puppet module at this time.
@@ -566,6 +574,22 @@ An array of any services you wish to block.
 
 Default value: ``undef``
 
+##### <a name="enable_tls"></a>`enable_tls`
+
+Data type: `Boolean`
+
+EXPERIMENTAL: enable TLS. This workflow is largely untested, use with caution.
+
+Default value: ``false``
+
+##### <a name="tls_options"></a>`tls_options`
+
+Data type: `Optional[Adguard::Tls_options]`
+
+The TLS configuration options.
+
+Default value: ``undef``
+
 ##### <a name="filters"></a>`filters`
 
 Data type: `Array[Adguard::Filter]`
@@ -740,6 +764,26 @@ The version to install from the GitHub release
 
 Default value: `'latest'`
 
+## Functions
+
+### <a name="adguardvalidate_tls_options"></a>`adguard::validate_tls_options`
+
+Type: Puppet Language
+
+This function ensures that the TLS config is valid before applying it.
+
+#### `adguard::validate_tls_options(Adguard::Tls_options $tls_options)`
+
+The adguard::validate_tls_options function.
+
+Returns: `Boolean` Returns true if the configuration is valid
+
+##### `tls_options`
+
+Data type: `Adguard::Tls_options`
+
+Accepts a hash of tls_options
+
 ## Data types
 
 ### <a name="adguardblocked_service"></a>`Adguard::Blocked_service`
@@ -858,6 +902,16 @@ Struct[{
 }]
 ```
 
+### <a name="adguardhttp_proxy"></a>`Adguard::Http_proxy`
+
+Very basic validation to ensure the proxy type is sensible
+
+Alias of
+
+```puppet
+Pattern[/^(http|https|socks5)\:\/\//]
+```
+
 ### <a name="adguardipv4_port"></a>`Adguard::Ipv4_port`
 
 Accepts an IPV4 address with a port (eg 192.168.1.1:8080)
@@ -888,6 +942,33 @@ Alias of
 Struct[{
     domain => String,
     answer => String,
+}]
+```
+
+### <a name="adguardtls_options"></a>`Adguard::Tls_options`
+
+Configures TLS options in AdGuard Home
+
+* **See also**
+  * https://github.com/AdguardTeam/AdGuardHome/wiki/Encryption
+
+Alias of
+
+```puppet
+Struct[{
+  server_name           => Stdlib::Host,
+  force_https           => Boolean,
+  port_https            => Stdlib::Port,
+  port_dns_over_tls     => Stdlib::Port,
+  port_dns_over_quic    => Stdlib::Port,
+  port_dnscrypt         => Stdlib::Port,
+  dnscrypt_config_file  => Optional[Stdlib::Unixpath],
+  allow_unencrypted_doh => Boolean,
+  strict_sni_check      => Boolean,
+  certificate_chain     => Optional[String],
+  private_key           => Optional[String],
+  certificate_path      => Optional[Stdlib::Unixpath],
+  private_key_path      => Optional[Stdlib::Unixpath]
 }]
 ```
 

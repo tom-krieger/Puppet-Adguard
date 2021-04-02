@@ -1,5 +1,7 @@
 # @summary
 #   Configures TLS options in AdGuard Home
+#
+# @see https://github.com/AdguardTeam/AdGuardHome/wiki/Encryption
 type Adguard::Tls_options = Struct[{
   server_name           => Stdlib::Host,
   force_https           => Boolean,
