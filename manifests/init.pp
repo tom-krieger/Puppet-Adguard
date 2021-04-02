@@ -105,6 +105,8 @@
 #   Please note, that this will be done for clients with public IP addresses only.
 # @param max_goroutines
 #   Max. number of parallel goroutines for processing incoming requests
+# @param ipset_rules
+#   Set ipset rules
 # @param filtering_enabled
 #   Filtering of DNS requests based on filter lists. 
 # @param filters_update_interval
@@ -240,6 +242,7 @@ class adguard
   Boolean $enable_dnssec = false,
   Boolean $edns_client_subnet = false,
   Integer $max_goroutines = 300,
+  Optional[Array] $ipset_rules = undef,
   Boolean $filtering_enabled = true,
   Integer $filters_update_interval = 24,
   Boolean $parental_enabled = false,
