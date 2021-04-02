@@ -379,7 +379,7 @@ inherits adguard::params
   }
   service { $service_name:
     ensure    => 'running',
-    subscribe =>  File[$configuration_file],
+    subscribe => File[$configuration_file],
     require   => Exec['install_adguard']
   }
   # If we're on a systemd and we're using port 53 we'll get an issue in starting up due to resolved, so we'll need to sort that out

@@ -154,13 +154,17 @@ user_rules: []
 <% end -%>
 dhcp:
   enabled: <%= @enable_dhcp %>
-  interface_name: "<%= @dhcp_interface %>"
+<% if @dhcp_interface -%>
+  interface_name: <%= @dhcp_interface %>
+<% else -%>
+  interface_name: ""
+<% end -%>
   dhcpv4:
 <% if @dhcp_v4_options -%>
-    gateway_ip: "<%= @dhcp_v4_options['gateway_ip'] %>"
-    subnet_mask: "<%= @dhcp_v4_options['subnet_mask'] %>"
-    range_start: "<%= @dhcp_v4_options['range_start'] %>"
-    range_end: "<%= @dhcp_v4_options['range_end'] %>"
+    gateway_ip: <%= @dhcp_v4_options['gateway_ip'] %>
+    subnet_mask: <%= @dhcp_v4_options['subnet_mask'] %>
+    range_start: <%= @dhcp_v4_options['range_start'] %>
+    range_end: <%= @dhcp_v4_options['range_end'] %>
     lease_duration: <%= @dhcp_v4_options['lease_duration'] %>
     icmp_timeout_msec: 1000
 <% if @dhcp_v4_options['options'] -%>
