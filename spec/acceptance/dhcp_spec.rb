@@ -21,14 +21,17 @@ pp_dhcp = <<-MANIFEST
 MANIFEST
 
 idempotent_apply(pp_dhcp)
-
 describe 'adguard_dhcp' do
-  context service('AdGuardHome') do
+  describe service('AdGuardHome') do
     it { is_expected.to be_enabled }
     it { is_expected.to be_running }
   end
-  context file('/opt/AdGuardHome/AdGuardHome.yaml') do
+
+  describe file('/opt/AdGuardHome/AdGuardHome.yaml') do
     it { is_expected.to be_file }
-    its(:content) { is_expected.to match(%r{gateway_ip: 192.168.1.1}).and match(%r{subnet_mask: 255.255.255.0}) }
+    it { is_expected.to contain %r{gateway_ip: 192.168.1.1} }
+    it { is_expected.to contain %r{subnet_mask: 255.255.255.0} }
+    it { is_expected.to contain %r{range_start: 192.168.1.2} }
+    it { is_expected.to contain %r{range_end: 192.168.1.20} }
   end
 end
