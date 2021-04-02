@@ -5,7 +5,6 @@ A Puppet module for installing and managing AdGuard Home
 # Module description
 This module will install and configure AdGuard Home on a node, it largely uses the defaults provided by AdGuard Home in a typical installation.  
 This module manages AdGuard by manipulating the `AdGuardHome.yaml` file.  
-There are some features that are not yet working in this module, see the [Known Limitations](#know-limitations) sections for more information. 
 
 This module has been tested on the following platforms:
 - Ubuntu 20.04
@@ -151,7 +150,7 @@ class {'adguard':
 ```
 This will stop Puppet from modifing the configuration file and allow AdGuard to manage the file.
 
-You may also wish to disable configuration file managment if you prefer to use to the WebUI to configure AdGuard, or you wish to use one of the [unsupported features](#unsupported-features).  
+You may also wish to disable configuration file managment if you prefer to use to the WebUI to configure AdGuard, or you wish to manage AdGuard's configuration manually.  
 
 **Note**: *Puppet will create the configuration file if it is missing with the values you have specified in your manifests and/or hiera.*  
 
@@ -160,7 +159,3 @@ If your configuration file has been overwritten Puppet will back it up before ov
 ## Systemd/Resolvd and AdGuard
 By default Resolvd will claim port `53` for `DNSStubListener` meaning AdGuard will fail to start when bound to port 53.  
 In these cases this module will disable `DNSStubListener` in `/etc/systemd/resolved.conf` which **WILL BREAK** local DNS lookups if AdGuard is ever removed and the setting is not changed back manually.
-
-## Unsupported features
-Currently this module does not support:
-- ipset
