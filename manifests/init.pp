@@ -326,7 +326,7 @@ inherits adguard::params
     {
       fail('tls_options required when enable_tls is true')
     }
-    if (adguard::validate_tls_options($tls_options) != True)
+    if (adguard::validate_tls_options($tls_options) != true)
     {
       fail('failed to validate tls_options')
     }

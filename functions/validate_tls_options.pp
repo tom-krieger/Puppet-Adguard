@@ -1,5 +1,10 @@
 # @summary 
 #   This function ensures that the TLS config is valid before applying it.
+#
+# @param tls_options
+#   Accepts a hash of tls_options
+#
+# @return [Boolean] Returns true if the configuration is valid
 function adguard::validate_tls_options(Adguard::Tls_options $tls_options) >> Boolean {
   # If dnscrypt is enabled (any port other than 0) there must be a path to a config file
   if ($tls_options['port_dnscrypt'] != 0 and !$tls_options['dnscrypt_config_file'])
@@ -29,5 +34,5 @@ function adguard::validate_tls_options(Adguard::Tls_options $tls_options) >> Boo
     }
   }
   # And if we've gotten here then return true
-  True
+  Boolean('true')
 }
