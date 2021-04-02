@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Release 
 
-### [v0.1.1](https://github.com/shoddyguard/Puppet-Adguard/tree/v0.1.1) (2020-04-01)
+### [v0.2.0](https://github.com/shoddyguard/Puppet-Adguard/tree/v0.2.0) (2020-04-01)
 
 **Features**
 - Moved several complex types into their own definitions rather than defining them in the parameters of the main class.
+- Added a new function for validating TLS options
 - Moved default parameter declarations from hiera into the manifests. This allows Puppet-Strings to extract default values into documentaion and makes things easier to locate.
 - Tidied up documentation and added some more examples
 - Expanded acceptance testing slightly
