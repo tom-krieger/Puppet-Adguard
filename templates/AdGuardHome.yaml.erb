@@ -185,10 +185,17 @@ dhcp:
     options: []
 <% end -%>
   dhcpv6:
+<% if @dhcp_v6_options -%>
+    range_start: <%= @dhcp_v6_options['range_start'] %>
+    lease_duration: <%= @dhcp_v6_options['lease_duration'] %>
+    ra_slaac_only: <%= dhcp_v6_options['ra_slaac_only'] %>
+    ra_allow_slaac: <%= dhcp_v6_options['ra_allow_slaac'] %>
+<% else -%>
     range_start: ""
     lease_duration: 86400
     ra_slaac_only: false
     ra_allow_slaac: false
+<% end -%>
 <% if @clients -%>
 clients:
 <% @clients.each do |cl| -%>

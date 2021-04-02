@@ -251,6 +251,7 @@ class adguard
   Boolean $enable_dhcp = false,
   Optional[String] $dhcp_interface = undef,
   Optional[Adguard::Dhcp_v4_options] $dhcp_v4_options = undef,
+  Optional[Adguard::Dhcp_v6_options] $dhcp_v6_options = undef,
   Optional[Array[Adguard::Client]] $clients = undef,
   Boolean $log_compress = false,
   Boolean $log_localtime = false,
