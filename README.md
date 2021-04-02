@@ -164,4 +164,3 @@ In these cases this module will disable `DNSStubListener` in `/etc/systemd/resol
 ## Unsupported features
 Currently this module does not support:
 - ipset
-- TLS/SSL settings

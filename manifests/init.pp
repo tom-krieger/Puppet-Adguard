@@ -130,6 +130,10 @@
 #      - answer: the ip address to point to
 # @param blocked_services
 #   An array of any services you wish to block.
+# @param enable_tls
+#   EXPERIMENTAL: enable TLS. This workflow is largely untested, use with caution.
+# @param tls_options
+#   The TLS configuration options.
 # @param filters
 #   An array of block filters to add. Will default to the standard list provided by AdGuard
 #   Format:
@@ -189,7 +193,7 @@ class adguard
   Array[Adguard::User] $users,
   Stdlib::IP::Address::V4::Nosubnet $webui_interface = '0.0.0.0',
   Stdlib::Port $webui_port = 80,
-  Optional[Stdlib::HTTPUrl] $http_proxy = undef,
+  Optional[Adguard::Http_proxy] $http_proxy = undef,
   Integer $rlimit_nofile = 0,
   Boolean $debug_pprof = false,
   Integer $web_session_ttl = 8,
@@ -247,6 +251,8 @@ class adguard
   Integer $cache_time = 30,
   Optional[Array[Adguard::Rewrite]] $rewrites = undef,
   Optional[Array[Adguard::Blocked_service]] $blocked_services = undef,
+  Boolean $enable_tls = false,
+  Optional[Adguard::Tls_options] $tls_options = undef,
   Array[Adguard::Filter] $filters = $adguard::params::filters,
   Optional[Array[Adguard::Filter]] $whitelist_filters = undef,
   Optional[Array] $user_rules = undef,
@@ -270,6 +276,7 @@ class adguard
 )
 inherits adguard::params
 {
+  # Validate various options that may have been provided
   if ($blocking_mode == 'custom_ip')
   {
     if (!$blocking_ipv4 or !$blocking_ipv6)
@@ -311,6 +318,17 @@ inherits adguard::params
     if ($dhcp_interface or $dhcp_v4_options or $dhcp_v6_options)
     {
       warning('dhcp_interface and/or dhcp_vX_options set when enable_dhcp is false. DHCP options will have no effect')
+    }
+  }
+  if ($enable_tls)
+  {
+    if (!$tls_options)
+    {
+      fail('tls_options required when enable_tls is true')
+    }
+    if (adguard::validate_tls_options($tls_options) != true)
+    {
+      fail('failed to validate tls_options')
     }
   }
   # Puppet has excellent facts, make use of them
