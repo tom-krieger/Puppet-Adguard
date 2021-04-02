@@ -8,15 +8,6 @@ pp_basic = <<-MANIFEST
               username => 'user',
               password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
           }],
-        enable_dhcp => true,
-        dhcp_interface => 'eth0',
-        dhcp_v4_options => {
-          gateway_ip => '192.168.1.1',
-          subnet_mask => '255.255.255.0',
-          range_start => '192.168.1.2',
-          range_end => '192.168.1.10',
-          lease_duration => 86400,
-        }
     }
 MANIFEST
 
@@ -29,7 +20,7 @@ describe 'adguard_basic' do
   end
   context file('/opt/AdGuardHome/AdGuardHome.yaml') do
     it { is_expected.to be_file }
-    its(:content) { is_expected.to match(%r{\$2y\$10\$c6lDDShTh5ezcvKhyWwOMet6C\/0tLxlgYX53wf58jl9tBdUVbYSqe}).and match(%r{gateway_ip: 192.168.1.1}) }
+    its(:content) { is_expected.to match(%r{password: \$2y\$10\$c6lDDShTh5ezcvKhyWwOMet6C\/0tLxlgYX53wf58jl9tBdUVbYSqe}).and match(%r{name: user}) }
   end
   # Ensure our ports are listening
   context port(80) do
