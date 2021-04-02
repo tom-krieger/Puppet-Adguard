@@ -23,7 +23,7 @@ class {'adguard':
 }
 ```
 This will download AdGuardHome and install it with default parameters and provide access to the user `user` with a password of `password`.  
-**Note**: AdGuard requires the password to be in BCrypt-encrypted format, to get a password you can run the following on most *nix systems:  
+**Note**: *AdGuard requires the password to be in BCrypt-encrypted format, to get a compatible string you can run the following from a terminal:*  
 `htpasswd -bnBC 10 "" MY_NEW_PASS | tr -d ':'`
 
 # Usage
@@ -163,6 +163,5 @@ In these cases this module will disable `DNSStubListener` in `/etc/systemd/resol
 
 ## Unsupported features
 Currently this module does not support:
-- DHCP
 - ipset
 - TLS/SSL settings
