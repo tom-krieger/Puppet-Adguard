@@ -193,7 +193,7 @@ class adguard
   Array[Adguard::User] $users,
   Stdlib::IP::Address::V4::Nosubnet $webui_interface = '0.0.0.0',
   Stdlib::Port $webui_port = 80,
-  Optional[Stdlib::HTTPUrl] $http_proxy = undef,
+  Optional[Adguard::Http_proxy] $http_proxy = undef,
   Integer $rlimit_nofile = 0,
   Boolean $debug_pprof = false,
   Integer $web_session_ttl = 8,
