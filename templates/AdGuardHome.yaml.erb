@@ -83,7 +83,14 @@ dns:
   enable_dnssec: <%= @enable_dnssec %>
   edns_client_subnet: <%= @edns_client_subnet %>
   max_goroutines: <%= @max_goroutines %>
+<% if @ipset_rules -%>
+  ipset:
+<% @ipset_rules.each do |ir| -%>
+  - <%= ir %>
+<% end -%>
+<% else -%>
   ipset: []
+<% end -%>
   filtering_enabled: <%= @filtering_enabled %>
   filters_update_interval: <%= @filters_update_interval %>
   parental_enabled: <%= @parental_enabled %>
