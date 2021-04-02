@@ -5,7 +5,7 @@
   "summary": "Manages AdGuard Home",
   "license": "Apache-2.0",
   "source": "https://github.com/shoddyguard/Puppet-Adguard",
-  "project_page": "https://github.com/shoddyguard/Puppet-Adguard/projects",
+  "project_page": "https://github.com/shoddyguard/Puppet-Adguard",
   "issues_url": "https://github.com/shoddyguard/Puppet-Adguard/issues",
   "dependencies": [
     {
