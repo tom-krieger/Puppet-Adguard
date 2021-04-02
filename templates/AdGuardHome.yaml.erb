@@ -112,7 +112,36 @@ dns:
 <% end -%>
   customresolver: null
 tls:
-  enabled: false
+  enabled: <%= @enable_tls %>
+<% if @tls_options -%>
+  server_name: <%= @tls_options['server_name'] %>
+  force_https: <%= @tls_options['force_https'] %>
+  port_https: <%= @tls_options['port_https'] %>
+  port_dns_over_tls: <%= @tls_options['port_dns_over_tls'] %>
+  port_dns_over_quic: <%= @tls_options['port_dns_over_quic'] %>
+  port_dnscrypt: <%= @tls_options['port_dnscrypt'] %>
+<% if @tls_options['dnscrypt_config_file'] -%>
+  dnscrypt_config_file: <%= @tls_options['dnscrypt_config_file'] %>
+<% else -%>
+  dnscrypt_config_file: ""
+<% end -%>
+  allow_unencrypted_doh: <%= @tls_options['allow_unencrypted_doh'] %>
+  strict_sni_check: <%= @tls_options['strict_sni_check'] %>
+<% if @tls_options['certificate_chain'] -%>
+  certificate_chain: <%= @tls_options['certificate_chain'] %>
+  private_key: <%= @tls_options['private_key'] %>
+<% else -%>
+  certificate_chain: ""
+  private_key: ""
+<% end -%>
+<% if @tls_options['certificate_path'] -%>
+  certificate_path: <%= @tls_options['certificate_path'] %>
+  private_key_path: <%= @tls_options['private_key_path'] %>
+<% else -%>
+  certificate_path: ""
+  private_key_path: ""
+<% end -%>
+<% else -%>
   server_name: ""
   force_https: false
   port_https: 443
@@ -126,6 +155,7 @@ tls:
   private_key: ""
   certificate_path: ""
   private_key_path: ""
+<% end -%>
 filters:
 <% @filters.to_enum.with_index(1).each do |fl, idx| -%>
 - enabled: <%= fl['enabled'] %>
