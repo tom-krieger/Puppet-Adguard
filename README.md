@@ -136,6 +136,73 @@ class {'adguard':
 ```
 For more information on this please see the [official AdGuard documentation](https://github.com/AdguardTeam/AdGuardHome/wiki/Clients#newclient)
 
+## Configuring DHCP
+AdGuard Home supports acting as a DHCP server
+To enable DHCP you would need to set `enable_dhcp` to `true`, specify a `dhcp_interface` and then specify your `dhcp_v4_options`/`dhcp_v6_options`  
+Example:  
+```puppet
+class {'adguard':
+    users => [{
+        username => 'user',
+        password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
+    }],
+    enable_dhcp => true,
+    dhcp_interface => 'eth0',
+    dhcp_v4_options => {
+      gateway_ip => '192.168.1.1',
+      subnet_mask => '255.255.255.0',
+      range_start => '192.168.1.2',
+      range_end => '192.168.1.20',
+      lease_duration => 86400, # in seconds
+    }
+```
+You can also specify custom DHCP options via the `options` parameter, these should be given as `CODE hex HEX_VALUE` (eg `6 hex 0102030401020305`).  
+```puppet
+class {'adguard':
+    users => [{
+        username => 'user',
+        password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
+    }],
+    enable_dhcp => true,
+    dhcp_interface => 'eth0',
+    dhcp_v4_options => {
+      gateway_ip => '192.168.1.1',
+      subnet_mask => '255.255.255.0',
+      range_start => '192.168.1.2',
+      range_end => '192.168.1.20',
+      lease_duration => 86400, # in seconds
+      options => [
+        '6 hex 0102030401020305'
+      ],
+    }
+```
+For more information see the official [AdGuard documentation](https://github.com/AdguardTeam/AdGuardHome/wiki/DHCP#config-4)
+
+## TLS Configuration
+As of v0.2.0 this module now supports setting the TLS settings in Adguard. This remains largely untested so use with caution and please report any issues on the module repository.  
+A basic configuration would look like:
+```puppet
+class {'adguard':
+    users => [{
+        username => 'user',
+        password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
+    }],
+    enable_tls => true,
+    tls_options => {
+        server_name => 'adguard-test.com',
+        force_https => false,
+        port_https => 443,
+        port_dns_over_tls => 853,
+        port_dns_over_quic => 784,
+        port_dnscrypt => 0,
+        allow_unencrypted_doh => false,
+        strict_sni_check => false,
+        certificate_path => '/root/cert.pem',
+        private_key_path => '/root/key.pem',
+    }
+```
+More information on these settings can be found in the [official AdGuard docs](https://github.com/AdguardTeam/AdGuardHome/wiki/Encryption)
+
 # Know Limitations
 ## Configuration overwriting itself/Disabling configuration file management
 Due to the fact this module manages configuration of AdGuard by manipulating the `AdGuardHome.yaml` file there may be instances where Puppet fights against AdGuard Home with both trying to change the contents of the file. 
