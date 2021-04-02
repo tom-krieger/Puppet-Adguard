@@ -7,12 +7,7 @@ pp_basic = <<-MANIFEST
           {
               username => 'user',
               password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
-          },
-          {
-              username => 'user2',
-              password => '$2y$10$c6lDDShTh5ezcvKhyWwOMet6C/0tLxlgYX53wf58jl9tBdUVbYSqe',
-          },
-      ]
+          }],
     }
 MANIFEST
 
@@ -25,7 +20,7 @@ describe 'adguard_basic' do
   end
   context file('/opt/AdGuardHome/AdGuardHome.yaml') do
     it { is_expected.to be_file }
-    its(:content) { is_expected.to match(%r{\$2y\$10\$c6lDDShTh5ezcvKhyWwOMet6C\/0tLxlgYX53wf58jl9tBdUVbYSqe}).and match(%r{user2}) }
+    its(:content) { is_expected.to match(%r{password: \$2y\$10\$c6lDDShTh5ezcvKhyWwOMet6C\/0tLxlgYX53wf58jl9tBdUVbYSqe}).and match(%r{name: user}) }
   end
   # Ensure our ports are listening
   context port(80) do

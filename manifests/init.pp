@@ -144,6 +144,14 @@
 #     - url: the URL to point to
 # @param user_rules
 #   Any custom rules you'd like to define, optional.
+# @param enable_dhcp
+#   EXPERIMENTAL: Enables the DHCP options within AdGuard.
+# @param dhcp_interface
+#   The network interface to enabled DHCP on (eg 'eth0')
+# @param dhcp_v4_options
+#   The configuration options for IPV4 DHCP
+# @param dhcp_v6_options
+#   The configuration options for IPV6 DHCP
 # @param clients
 #   EXPERIMENTAL: Override global defaults for a given list of clients.
 #   See: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients for details
@@ -242,6 +250,10 @@ class adguard
   Array[Adguard::Filter] $filters = $adguard::params::filters,
   Optional[Array[Adguard::Filter]] $whitelist_filters = undef,
   Optional[Array] $user_rules = undef,
+  Boolean $enable_dhcp = false,
+  Optional[String] $dhcp_interface = undef,
+  Optional[Adguard::Dhcp_v4_options] $dhcp_v4_options = undef,
+  Optional[Adguard::Dhcp_v6_options] $dhcp_v6_options = undef,
   Optional[Array[Adguard::Client]] $clients = undef,
   Boolean $log_compress = false,
   Boolean $log_localtime = false,
@@ -284,6 +296,21 @@ inherits adguard::params
           fail ('cannot declare blocked_services when use_global_blocked_services is true')
         }
       }
+    }
+  }
+  if ($enable_dhcp == true)
+  {
+    # Ensure we have options configured
+    if (!$dhcp_interface or (!$dhcp_v4_options and !$dhcp_v6_options))
+    {
+      fail('dhcp_interface and either dhcp_v4_options or dhcp_v6_options must be declared when enabled_dhcp is set to true')
+    }
+  }
+  else
+  {
+    if ($dhcp_interface or $dhcp_v4_options or $dhcp_v6_options)
+    {
+      warning('dhcp_interface and/or dhcp_vX_options set when enable_dhcp is false. DHCP options will have no effect')
     }
   }
   # Puppet has excellent facts, make use of them
@@ -355,7 +382,7 @@ inherits adguard::params
   }
   service { $service_name:
     ensure    => 'running',
-    subscribe =>  File[$configuration_file],
+    subscribe => File[$configuration_file],
     require   => Exec['install_adguard']
   }
   # If we're on a systemd and we're using port 53 we'll get an issue in starting up due to resolved, so we'll need to sort that out

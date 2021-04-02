@@ -18,8 +18,10 @@
 
 * [`Adguard::Blocked_service`](#adguardblocked_service): A list of services that AdGuard Home is able to block out of the box.
 * [`Adguard::Client`](#adguardclient): Provides a structure for defining client overrides.
-For more information see the official AdGuard docs: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
 * [`Adguard::Config_file`](#adguardconfig_file): Simple regex check for the AdGuard config file
+* [`Adguard::Dhcp_option`](#adguarddhcp_option): Ensures correct input for DHCP options
+* [`Adguard::Dhcp_v4_options`](#adguarddhcp_v4_options): A structured hash used to supply DHCP options for IPV4
+* [`Adguard::Dhcp_v6_options`](#adguarddhcp_v6_options): A structured hash for sepcifying DHCP options for IPV6
 * [`Adguard::Dns_server`](#adguarddns_server): Valid DNS server types
 * [`Adguard::Filter`](#adguardfilter): Used to manage filters in Adguard
 * [`Adguard::Ipv4_port`](#adguardipv4_port): Accepts an IPV4 address with a port (eg 192.168.1.1:8080)
@@ -105,6 +107,10 @@ The following parameters are available in the `adguard` class:
 * [`filters`](#filters)
 * [`whitelist_filters`](#whitelist_filters)
 * [`user_rules`](#user_rules)
+* [`enable_dhcp`](#enable_dhcp)
+* [`dhcp_interface`](#dhcp_interface)
+* [`dhcp_v4_options`](#dhcp_v4_options)
+* [`dhcp_v6_options`](#dhcp_v6_options)
 * [`clients`](#clients)
 * [`log_compress`](#log_compress)
 * [`log_localtime`](#log_localtime)
@@ -592,6 +598,38 @@ Any custom rules you'd like to define, optional.
 
 Default value: ``undef``
 
+##### <a name="enable_dhcp"></a>`enable_dhcp`
+
+Data type: `Boolean`
+
+EXPERIMENTAL: Enables the DHCP options within AdGuard.
+
+Default value: ``false``
+
+##### <a name="dhcp_interface"></a>`dhcp_interface`
+
+Data type: `Optional[String]`
+
+The network interface to enabled DHCP on (eg 'eth0')
+
+Default value: ``undef``
+
+##### <a name="dhcp_v4_options"></a>`dhcp_v4_options`
+
+Data type: `Optional[Adguard::Dhcp_v4_options]`
+
+The configuration options for IPV4 DHCP
+
+Default value: ``undef``
+
+##### <a name="dhcp_v6_options"></a>`dhcp_v6_options`
+
+Data type: `Optional[Adguard::Dhcp_v6_options]`
+
+The configuration options for IPV6 DHCP
+
+Default value: ``undef``
+
 ##### <a name="clients"></a>`clients`
 
 Data type: `Optional[Array[Adguard::Client]]`
@@ -717,87 +755,26 @@ Enum['9gag', 'amazon', 'cloudflare', 'dailymotion', 'discord', 'disneyplus', 'eb
 ### <a name="adguardclient"></a>`Adguard::Client`
 
 Provides a structure for defining client overrides.
-For more information see the official AdGuard docs: https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
 
-#### Examples
-
-##### 
-
-```puppet
-{
-   name => 'My Laptop',
-   tags => ['my_tag'],
-   ids  => ['00:1B:44:11:3A:B7'],
-   use_global_settings => false,
-   filtering_enabled => true,
-   parental_enabled => false,
-   safesearch_enabled => false,
-   use_global_blocked_services => false,
-   blocked_services => ['Facebook'],
-   upstreams => ['8.8.8.8']
-}
-```
+* **See also**
+  * https://github.com/AdguardTeam/AdGuardHome/wiki/Clients
 
 Alias of
 
 ```puppet
-Struct[=>]
+Struct[{
+    name                        => String,
+    tags                        => Optional[Array],
+    ids                         => Array,
+    use_global_settings         => Boolean,
+    filtering_enabled           => Optional[Boolean],
+    parental_enabled            => Optional[Boolean],
+    safesearch_enabled          => Optional[Boolean],
+    use_global_blocked_services => Boolean,
+    blocked_services            => Optional[Array[Adguard::Blocked_service]],
+    upstreams                   => Optional[Array]
+}]
 ```
-
-#### Parameters
-
-The following parameters are available in the `Adguard::Client` data type:
-
-* [`name`](#name)
-* [`tags`](#tags)
-* [`ids`](#ids)
-* [`use_global_settings`](#use_global_settings)
-* [`filtering_enabled`](#filtering_enabled)
-* [`parental_enabled`](#parental_enabled)
-* [`safesearch_enabled`](#safesearch_enabled)
-* [`use_global_blocked_services`](#use_global_blocked_services)
-* [`blocked_services`](#blocked_services)
-* [`upstreams`](#upstreams)
-
-##### <a name="name"></a>`name`
-
-The name of the client.
-
-##### <a name="tags"></a>`tags`
-
-Any tags to provide for the client
-
-##### <a name="ids"></a>`ids`
-
-An array of ids to use for the client (usually MAC address)
-
-##### <a name="use_global_settings"></a>`use_global_settings`
-
-Whether or not to use the global settings
-
-##### <a name="filtering_enabled"></a>`filtering_enabled`
-
-Whether to enable or disable filtering for this client
-
-##### <a name="parental_enabled"></a>`parental_enabled`
-
-Whether to enable or disable parental filtering for this client
-
-##### <a name="safesearch_enabled"></a>`safesearch_enabled`
-
-Whether to force safesearches on this client or not
-
-##### <a name="use_global_blocked_services"></a>`use_global_blocked_services`
-
-Whether to override the global_blocked_services for this client or not
-
-##### <a name="blocked_services"></a>`blocked_services`
-
-Which services to block for this client
-
-##### <a name="upstreams"></a>`upstreams`
-
-Override upstream DNS servers for this client
 
 ### <a name="adguardconfig_file"></a>`Adguard::Config_file`
 
@@ -807,6 +784,54 @@ Alias of
 
 ```puppet
 Pattern[/(.*\/)(.*)(AdGuardHome.yaml$)/]
+```
+
+### <a name="adguarddhcp_option"></a>`Adguard::Dhcp_option`
+
+Ensures correct input for DHCP options
+
+Alias of
+
+```puppet
+Variant[Pattern[/^(\d)* hex ([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})*$/], Stdlib::IP::Address::V4::Nosubnet]
+```
+
+### <a name="adguarddhcp_v4_options"></a>`Adguard::Dhcp_v4_options`
+
+A structured hash used to supply DHCP options for IPV4
+
+* **See also**
+  * https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration#configuration-file
+
+Alias of
+
+```puppet
+Struct[{
+  gateway_ip     => Stdlib::IP::Address::V4::Nosubnet,
+  subnet_mask    => Stdlib::IP::Address::V4::Nosubnet,
+  range_start    => Stdlib::IP::Address::V4::Nosubnet,
+  range_end      => Stdlib::IP::Address::V4::Nosubnet,
+  lease_duration => Integer,
+  options        => Optional[Array[Adguard::Dhcp_option]],
+}]
+```
+
+### <a name="adguarddhcp_v6_options"></a>`Adguard::Dhcp_v6_options`
+
+A structured hash for sepcifying DHCP options for IPV6
+
+* **See also**
+  * https://github.com/AdguardTeam/AdGuardHome/wiki/DHCP#dhcpv6-options
+
+Alias of
+
+```puppet
+Struct[{
+  range_start    => Stdlib::IP::Address::V6,
+  lease_duration => Integer,
+  ra_slaac_only  => Boolean,
+  ra_allow_slaac => Boolean,
+}]
 ```
 
 ### <a name="adguarddns_server"></a>`Adguard::Dns_server`
@@ -823,43 +848,15 @@ Variant[Stdlib::IP::Address, Stdlib::HTTPUrl, Adguard::Ipv4_port]
 
 Used to manage filters in Adguard
 
-#### Examples
-
-##### 
-
-```puppet
-{
-    name => 'My Filter',
-    enabled => true,
-    url => 'http://filters.com/myfilter.txt',
-}
-```
-
 Alias of
 
 ```puppet
-Struct[=>]
+Struct[{
+    name    => String,
+    enabled => Boolean,
+    url     => Stdlib::HTTPUrl,
+}]
 ```
-
-#### Parameters
-
-The following parameters are available in the `Adguard::Filter` data type:
-
-* [`name`](#name)
-* [`enabled`](#enabled)
-* [`url`](#url)
-
-##### <a name="name"></a>`name`
-
-The name of the filter.
-
-##### <a name="enabled"></a>`enabled`
-
-Whether to enabled or disable the filter.
-
-##### <a name="url"></a>`url`
-
-The url to the filter.
 
 ### <a name="adguardipv4_port"></a>`Adguard::Ipv4_port`
 
@@ -888,23 +885,11 @@ Stuctured hash for managing rewrites
 Alias of
 
 ```puppet
-Struct[=>]
+Struct[{
+    domain => String,
+    answer => String,
+}]
 ```
-
-#### Parameters
-
-The following parameters are available in the `Adguard::Rewrite` data type:
-
-* [`domain`](#domain)
-* [`answer`](#answer)
-
-##### <a name="domain"></a>`domain`
-
-The domain to create the rewrite rule for
-
-##### <a name="answer"></a>`answer`
-
-The answer to return
 
 ### <a name="adguarduser"></a>`Adguard::User`
 
@@ -913,21 +898,9 @@ A structed hash for providing users for the adguard web UI.
 Alias of
 
 ```puppet
-Struct[=>]
+Struct[{
+    username => String,
+    password => String
+}]
 ```
-
-#### Parameters
-
-The following parameters are available in the `Adguard::User` data type:
-
-* [`username`](#username)
-* [`password`](#password)
-
-##### <a name="username"></a>`username`
-
-The username used to login
-
-##### <a name="password"></a>`password`
-
-The password in BCrypt-encrypted format
 
