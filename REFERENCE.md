@@ -86,6 +86,7 @@ The following parameters are available in the `adguard` class:
 * [`upstream_dns`](#upstream_dns)
 * [`upstream_dns_file`](#upstream_dns_file)
 * [`bootstrap_dns`](#bootstrap_dns)
+* [`local_ptr_upstreams`](#local_ptr_upstreams)
 * [`all_servers`](#all_servers)
 * [`fastest_addr`](#fastest_addr)
 * [`allowed_clients`](#allowed_clients)
@@ -369,8 +370,16 @@ Default value: `[
     '9.9.9.10',
     '149.112.112.10',
     '2620:fe::10',
-    '2620:fe::fe:10'
+    '2620:fe::fe:10',
   ]`
+
+##### <a name="local_ptr_upstreams"></a>`local_ptr_upstreams`
+
+Data type: `Optional[Array[Stdlib::IP::Address]]`
+
+Private reverse DNS servers to use.
+
+Default value: ``undef``
 
 ##### <a name="all_servers"></a>`all_servers`
 
@@ -414,7 +423,7 @@ An array of hosts to block.
 Default value: `[
     'version.bind',
     'id.server',
-    'hostname.bind'
+    'hostname.bind',
   ]`
 
 ##### <a name="dns_cache_size"></a>`dns_cache_size`

@@ -46,6 +46,14 @@ dns:
 <% @bootstrap_dns.each do |bd| -%>
   - <%= bd %>
 <% end -%>
+<% if @local_ptr_upstreams -%>
+  local_ptr_upstreams:
+<% @local_ptr_upstreams.each do |up_ptr| -%>
+  - <%=up_ptr %>
+<% end -%>
+<% else -%>
+  local_ptr_upstreams: []
+<% end -%>
   all_servers: <%= @all_servers %>
   fastest_addr: <%= @fastest_addr %>
 <% if @allowed_clients -%>

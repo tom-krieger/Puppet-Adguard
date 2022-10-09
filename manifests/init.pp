@@ -75,6 +75,8 @@
 #   Path to a file with the list of upstream DNS servers. If it is configured, the value of upstream_dns is ignored. Defaults to undef
 # @param bootstrap_dns
 #   List of DNS servers used for initial hostname resolution in case an upstream server name is a hostname.
+# @param local_ptr_upstreams
+#   Private reverse DNS servers to use.
 # @param all_servers
 #   Enables parallel queries to all configured upstream servers to speed up resolving. 
 #   If disabled, the queries are sent to each upstream server one-by-one and then sorted by RTT. 
@@ -190,8 +192,7 @@
 #   The name of the service to manage, defaults to AdGuardHome
 # @param version
 #   The version to install from the GitHub release
-class adguard
-(
+class adguard (
   Array[Adguard::User] $users,
   Stdlib::IP::Address::V4::Nosubnet $webui_interface = '0.0.0.0',
   Stdlib::Port $webui_port = 80,
@@ -223,8 +224,9 @@ class adguard
     '9.9.9.10',
     '149.112.112.10',
     '2620:fe::10',
-    '2620:fe::fe:10'
+    '2620:fe::fe:10',
   ],
+  Optional[Array[Stdlib::IP::Address]] $local_ptr_upstreams = undef,
   Boolean $all_servers = false,
   Boolean $fastest_addr = false,
   Optional[Array[Stdlib::IP::Address]] $allowed_clients = undef,
@@ -232,7 +234,7 @@ class adguard
   Array $blocked_hosts = [
     'version.bind',
     'id.server',
-    'hostname.bind'
+    'hostname.bind',
   ],
   Integer $dns_cache_size = 4194304,
   Integer[default,3600] $dns_cache_ttl_min = 0,
@@ -277,87 +279,69 @@ class adguard
   String $service_name = 'AdGuardHome',
   String $version = 'latest',
 )
-inherits adguard::params
-{
+inherits adguard::params {
   # Validate various options that may have been provided
-  if ($blocking_mode == 'custom_ip')
-  {
-    if (!$blocking_ipv4 or !$blocking_ipv6)
-    {
+  if ($blocking_mode == 'custom_ip') {
+    if (!$blocking_ipv4 or !$blocking_ipv6) {
       fail('blocking_ipv4 and/or blocking_ipv6 must be declared when blocking_mode is set to custom_ip')
     }
   }
-  if ($clients)
-  {
+  if ($clients) {
     # Sanity check the client data
     $clients.each | $client | {
       # When using global settings we can't specify individual settings
-      if ($client['use_global_settings'] == true)
-      {
-        if ($client['filtering_enabled'] or $client['parental_enabled'] or $client['safesearch_enabled'] or $client['safebrowsing_enabled'])
-        {
+      if ($client['use_global_settings'] == true) {
+        if ($client['filtering_enabled'] or $client['parental_enabled'] or $client['safesearch_enabled'] or $client['safebrowsing_enabled']) { #lint:ignore:140chars
           fail('cannot set individual client settings when use_global_settings is true')
         }
       }
-      if ($client['use_global_blocked_services'] == true)
-      {
-        if ($client['blocked_services'])
-        {
+      if ($client['use_global_blocked_services'] == true) {
+        if ($client['blocked_services']) {
           fail ('cannot declare blocked_services when use_global_blocked_services is true')
         }
       }
     }
   }
-  if ($enable_dhcp == true)
-  {
+  if ($enable_dhcp == true) {
     # Ensure we have options configured
-    if (!$dhcp_interface or (!$dhcp_v4_options and !$dhcp_v6_options))
-    {
+    if (!$dhcp_interface or (!$dhcp_v4_options and !$dhcp_v6_options)) {
       fail('dhcp_interface and either dhcp_v4_options or dhcp_v6_options must be declared when enabled_dhcp is set to true')
     }
   }
-  else
-  {
-    if ($dhcp_interface or $dhcp_v4_options or $dhcp_v6_options)
-    {
+  else {
+    if ($dhcp_interface or $dhcp_v4_options or $dhcp_v6_options) {
       warning('dhcp_interface and/or dhcp_vX_options set when enable_dhcp is false. DHCP options will have no effect')
     }
   }
-  if ($enable_tls)
-  {
-    if (!$tls_options)
-    {
+  if ($enable_tls) {
+    if (!$tls_options) {
       fail('tls_options required when enable_tls is true')
     }
-    if (adguard::validate_tls_options($tls_options) != true)
-    {
+    if (adguard::validate_tls_options($tls_options) != true) {
       fail('failed to validate tls_options')
     }
   }
   # Puppet has excellent facts, make use of them
-  case $::architecture
-  {
+  case $facts['os']['architecture'] {
     /(amd64|x64)/:
-    {
-      $cpu_arch = 'amd64'
-    }
-    /(i386|i486|i686|i786|x86)/:
-    {
-      $cpu_arch = '386'
-    }
-    default:
-    {
-      fail('unsupported cpu architecture')
-    }
+      {
+        $cpu_arch = 'amd64'
+      }
+      /(i386|i486|i686|i786|x86)/:
+      {
+        $cpu_arch = '386'
+      }
+      default:
+      {
+        fail('unsupported cpu architecture')
+      }
   }
   # Annoyingly the AdGuard archives container a folder instead of being directly in the root :(
   # Get the parent path unless we're already installing to the root of somewhere
-  if ($adguard_path =~ /(.*\/)(.*)AdGuardHome$/)
-  {
+  if ($adguard_path =~ /(.*\/)(.*)AdGuardHome$/) {
     $extract_path = $1
   }
-  else
-  {
+  else {
     $extract_path = $adguard_path
   }
   $extension = '.tar.gz' # right now we only support tar.gz, but if we add support for Windows we'll need to support .zip as well
@@ -371,7 +355,7 @@ inherits adguard::params
   }
   # Copy the configuration file
   file { $configuration_file:
-    ensure  => present,
+    ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644', # Stop fighting with AdGuard
@@ -404,13 +388,12 @@ inherits adguard::params
   service { $service_name:
     ensure    => 'running',
     subscribe => File[$configuration_file],
-    require   => Exec['install_adguard']
+    require   => Exec['install_adguard'],
   }
   # If we're on a systemd and we're using port 53 we'll get an issue in starting up due to resolved, so we'll need to sort that out
-  if (($::systemd == true or $::os['family'] =~ /[dD]ebian/) and $dns_port == 53)
-  {
+  if (($::systemd == true or $::os['family'] =~ /[dD]ebian/) and $dns_port == 53) {
     notice('disabling resolved DNSStubListener')
-    ini_setting {'adguard_disable_DNSStubListener':
+    ini_setting { 'adguard_disable_DNSStubListener':
       ensure            => present,
       path              => '/etc/systemd/resolved.conf',
       setting           => 'DNSStubListener',
@@ -425,10 +408,10 @@ inherits adguard::params
       before            => Service[$service_name],
       require           => Githubreleases_download["${adguard_path}/adguard${extension}"],
     }
-    service {'systemd_resolved_adguard':
+    service { 'systemd_resolved_adguard':
       ensure    => 'running',
       name      => 'systemd-resolved',
-      subscribe => Ini_setting['adguard_disable_DNSStubListener']
+      subscribe => Ini_setting['adguard_disable_DNSStubListener'],
     }
   }
 }

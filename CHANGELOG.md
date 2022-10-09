@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Release 
+## Release
+
+### [v0.2.1](https://github.com/shoddyguard/Puppet-Adguard/tree/v0.2.1) (2022-10-09)
+
+**Features**
+- added `local_ptr_upstreams` parameter.
 
 ### [v0.2.0](https://github.com/shoddyguard/Puppet-Adguard/tree/v0.2.0) (2020-04-01)
 
